@@ -17,11 +17,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="my-icons.html">
 
-<dom-module id="my-app">
+<dom-module id="tekvideo-dashboard">
 
   <template>
 
@@ -59,6 +60,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-left: 32px;
       }
 
+      paper-tab {
+        --paper-tab: pink;
+        --paper-tab-ink: pink;
+      }
 
     </style>
 
@@ -69,37 +74,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <app-drawer-layout fullbleed>
+    <paper-tabs selected="{{page}}" attr-for-selected="name" flex link>
+      <!-- Tabs should link to the correct views. Currently have styling issues -->
+      <paper-tab name="home">Hjem</paper-tab>
+      <paper-tab name="views">Visninger</paper-tab>
+      <paper-tab name="students">Studerende</paper-tab>
+      <paper-tab name="answers">Svar</paper-tab>
+    </paper-tabs>
 
-      <!-- Drawer content -->
-      <app-drawer>
-        <app-toolbar>Menu</app-toolbar>
-        <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="/view1">View One</a>
-          <a name="view2" href="/view2">View Two</a>
-          <a name="view3" href="/view3">View Three</a>
-        </iron-selector>
-      </app-drawer>
-
-      <!-- Main content -->
-      <app-header-layout has-scrolling-region>
-
-        <app-header condenses reveals effects="waterfall">
-          <app-toolbar>
-            <paper-icon-button icon="menu" drawer-toggle></paper-icon-button>
-            <div title>My App</div>
-          </app-toolbar>
-        </app-header>
-
-        <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-        </iron-pages>
-
-      </app-header-layout>
-
-    </app-drawer-layout>
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name">
+      <tekvideo-dash-home name="home"></tekvideo-dash-home>
+      <tekvideo-dash-views 
+        name="views" 
+        node="{{node}}" 
+        period-from="{{periodFrom}}" 
+        period-to="{{periodTo}}"
+        base-url="{{baseUrl}}">
+      </tekvideo-dash-views>
+      <tekvideo-dash-students name="students"></tekvideo-dash-students>
+      <tekvideo-dash-answers name="answers"></tekvideo-dash-answers>
+    </iron-pages>
 
   </template>
 
@@ -107,16 +101,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     Polymer({
 
-      is: 'my-app',
+      is: 'tekvideo-dashboard',
 
       properties: {
-
         page: {
           type: String,
           reflectToAttribute: true,
           observer: '_pageChanged'
         },
-
+        node: {
+          type: String,
+          value: "course/7"
+        },
+        periodFrom: {
+          type: Number,
+          value: 0
+        },
+        periodTo: {
+          type: Number,
+          value: 1471008336499
+        },
+        baseUrl: {
+          type: String,
+          value: "http://localhost:8080/tekvideo/"
+        }
       },
 
       observers: [
@@ -124,13 +132,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ],
 
       _routePageChanged: function(page) {
-        this.page = page || 'view1';
+        this.page = page || 'home';
       },
 
       _pageChanged: function(page) {
         // load page import on demand.
         this.importHref(
-          this.resolveUrl('my-' + page + '.html'), null, null, true);
+          this.resolveUrl('tekvideo-dash-' + page + '.html'), null, null, true);
       }
 
     });
