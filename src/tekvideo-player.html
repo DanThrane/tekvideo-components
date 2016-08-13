@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
 <link rel="import" href="tekvideo-timecode.html">
 <link rel="import" href="jquery-dependency.html">
 <link rel="import" href="tekvideo-math-field.html">
@@ -11,10 +14,9 @@
 <dom-module id="tekvideo-player">
 
 <template>
-<style>
+<style is="custom-style">
 :host {
     display: block;
-    padding: 10px;
 }
 
 #player iframe {
@@ -56,29 +58,35 @@ a {
 }
 
 .question.error {
-    background-color: #f77;
+    background-color: var(--paper-red-300);
 }
 
 .question.correct {
-    background-color: #7f7;
+    background-color: var(--paper-green-300);
 }
 
 tekvideo-math-field {
     background: white;
 }
+
+#checkButton {
+    width: 100%;
+    background-color: var(--paper-blue-500);
+    color: white;
+}
 </style>
 
-<div id="player-container">
-    <div>
-        <div id="parent">
-            <div id="wrapper"></div>
+<style include="iron-flex"></style>
 
-            <div id="player"></div>
-        </div>
+<div id="player-container" class="layout horizontal">
+    <div id="parent" class="flex">
+        <div id="wrapper"></div>
+
+        <div id="player"></div>
     </div>
 
-    <div>
-        <ul id="video-navigation">
+    <div class="layout vertical">
+        <ul id="video-navigation" class="flex">
             <template is="dom-repeat" items="{{timeline}}" as="subject" indexAs="subjectIndex">
                 <li>
                     <a href="#" id="navitem[[subjectIndex]]" 
@@ -101,11 +109,11 @@ tekvideo-math-field {
                 </ul>
             </template>
         </ul>
+        <div hidden$="{{!showCheckButton}}">
+            <paper-button raised id="checkButton">Tjek svar</paper-button>
+        </div>
     </div>
 
-    <div hidden$="{{!showCheckButton}}">
-        <paper-button raised id="checkButton">Tjek svar</paper-button>
-    </div>
 </div>
 
 </template>
