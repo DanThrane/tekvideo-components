@@ -445,28 +445,43 @@
 }
 </style>
 
-<span id="mathField"><content></content></span>
+<span id="mathField"></span>
 
 </template>
 
 <script>
 Polymer({
     is: 'tekvideo-math-field',
-    properties: {},
+    _shouldUpdate: true,
+    properties: {
+        value: {
+            type: String,
+            value: "",
+            observer: "_valueChanged"
+        }
+    },
     _mathField: null,
     attached: function() {
-		var self = this;
-
-    	var mathFieldSpan = this.$.mathField;
-    	var latexSpan = this.$.latex;
-    	var MQ = MathQuill.getInterface(2); // for backcompat
-		var mathField = MQ.MathField(mathFieldSpan, {
-		  spaceBehavesLikeTab: true, // configurable
-		});
-		this._mathField = mathField;
+  		var self = this;
+        var mathFieldSpan = this.$.mathField;
+        var latexSpan = this.$.latex;
+        var MQ = MathQuill.getInterface(2);
+  	    var mathField = MQ.MathField(mathFieldSpan, {
+  		    spaceBehavesLikeTab: true,
+            handlers: {
+                edit: function() {
+                    self._shouldUpdate = false;
+                    self.value = mathField.latex();
+                }
+            }
+  		});
+  		this._mathField = mathField;
     },
-    getValue: function() {
-    	return parseTex(this._mathField.latex());
+    _valueChanged: function() {
+        if (this._shouldUpdate && this._mathField != null) {
+            this._mathField.latex(this.value);
+        }
+        this._shouldUpdate = true;
     }
 });
 </script>

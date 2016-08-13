@@ -271,7 +271,7 @@ tekvideo-math-field {
                     console.log(field);
                     var input = self.$$("#" + field.name);
                     
-                    var val = input.getValue();
+                    var val = input.value;
                     console.log(val);
                     var $input = $(input);
                     $input.removeClass("correct error");
@@ -404,6 +404,17 @@ tekvideo-math-field {
         },
         _createInputField: function(id) {
             return '<tekvideo-math-field class="question" id="' + id + '"></tekvideo-math-field>';
+        },
+        setFieldValues: function(subjectIndex, questionIndex, values) {
+            // TODO automatically go to subject
+            var fields = this.timeline[subjectIndex].questions[questionIndex].fields;
+            if (fields != null) {
+                for (var i = 0; i < fields.length; i++) {
+                    var field = fields[i];
+                    var element = this.$$("#" + field.name);
+                    element.value = values[i];
+                }
+            }
         }
     });
 })();

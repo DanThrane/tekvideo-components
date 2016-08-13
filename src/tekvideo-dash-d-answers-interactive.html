@@ -8,7 +8,6 @@
 <style>
 :host {
     display: block;
-    padding: 10px;
 }
 
 paper-card {
@@ -18,17 +17,34 @@ paper-card {
 </style>
 
 <div hidden$="{{!shouldRender}}">
-    <!-- TODO Should only fire when 'shouldRender' is true -->
     <iron-ajax
-        auto
+        auto="{{shouldRender}}"
+        id="videoEndpoint"
         url="[[baseUrl]]dashboard/videos?identifier=[[node]]"
         handle-as="json"
         on-response="_handleVideo"
         debounce-duration="300"></iron-ajax>
+
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="studentsEndpoint"
+        url="[[baseUrl]]dashboard/students?identifier=[[node]]"
+        handle-as="json"
+        last-response="{{students}}"
+        debounce-duration="300"></iron-ajax>
     
-    <paper-card heading="Populære Videoer" >
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="answersEndpoint"
+        url="[[baseUrl]]dashboard/answers/{{_computeVideoId(node)}}/?periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
+        handle-as="json"
+        last-response="{{answers}}"
+        debounce-duration="300"></iron-ajax>
+
+    <paper-card heading="Interaktiv svar analyse">
         <div class="card-content">
-            <tekvideo-player id="player" disable-check-button></tekvideo-player>
+            <tekvideo-player id="player" disable-check-button>
+            </tekvideo-player>
         </div>
     </paper-card>
 </div>
@@ -54,7 +70,28 @@ Polymer({
         shouldRender: {
             type: Boolean,
             computed: "_computeShouldRender(node)"
+        },
+        _videoId: {
+            type: String,
+            computed: "_computeVideoId(node)"
         }
+    },
+
+    attached: function() {
+        var self = this;
+        this.$.player.addEventListener("questionShown", function(event) {
+            var player = self.$.player;
+            var question = event.detail;
+            var values = question.question.fields.map(function(element) {
+                return "\\text{"+element.name+"}";
+            });
+            player.setFieldValues(question.subjectId, question.questionId, values);
+        });
+    },
+
+    _computeVideoId: function(node) {
+        console.log("calling: ", node.split("/")[1]);
+        return node.split("/")[1];
     },
 
     _computeShouldRender: function(node) {
@@ -62,8 +99,20 @@ Polymer({
     },
 
     _handleVideo: function(event) {
-        var response = event.target.lastResponse;
-        console.log(response);
+        var response = event.target.lastResponse[0];
+        var player = this.$.player;
+        
+        var timeline;
+        try {
+            timeline = JSON.parse(response.timelineJson);
+        } catch (e) {
+            timeline = [];
+        }
+        player.timeline = timeline;
+        player.videoId = response.youtubeId;
+        player.isYouTube = response.videoType;
+
+        console.log("Got a response: ", response);
     }
 });
 </script>

@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="tekvideo-dash-s-views-popular.html">
 <link rel="import" href="tekvideo-dash-s-answers-interactive.html">
 <link rel="import" href="tekvideo-dash-d-answers-interactive.html">
+<link rel="import" href="tekvideo-math-field.html">
 <link rel="import" href="tekvideo-player.html">
 
 <dom-module id="tekvideo-dashboard">
@@ -48,9 +49,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     .drawer-list a.subroute {
         padding-left: 32px;
     }
+
+    #container * {
+        margin: 10px;
+    }
     </style>
 
-    <div fullbleed class="layout vertical">
+    <div id="container" fullbleed class="layout vertical">
+        <tekvideo-math-field></tekvideo-math-field>
         <tekvideo-dash-s-views-graph
             class="stats-card"
             node="{{node}}"
