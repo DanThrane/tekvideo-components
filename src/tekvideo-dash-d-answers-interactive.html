@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="tekvideo-player.html">
 
 <dom-module id="tekvideo-dash-d-answers-interactive">
 
@@ -27,8 +28,7 @@ paper-card {
     
     <paper-card heading="Populære Videoer" >
         <div class="card-content">
-            This should only be shown for videos
-            {{shouldRender}}
+            <tekvideo-player id="player" disable-check-button></tekvideo-player>
         </div>
     </paper-card>
 </div>

@@ -109,8 +109,8 @@ tekvideo-math-field {
                 </ul>
             </template>
         </ul>
-        <div hidden$="{{!showCheckButton}}">
-            <paper-button raised id="checkButton">Tjek svar</paper-button>
+        <div hidden$="{{disableCheckButton}}">
+            <paper-button raised id="checkButton">Tjek svar {{disableCheckButton}}</paper-button>
         </div>
     </div>
 
@@ -149,9 +149,9 @@ tekvideo-math-field {
                 value: true,
                 observer: "_videoChanged"
             },
-            showCheckButton: {
+            disableCheckButton: {
                 type: Boolean,
-                value: true
+                value: false
             }
         },
         _timelineChanged: function() {
