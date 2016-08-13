@@ -1,0 +1,70 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
+<dom-module id="tekvideo-dash-d-answers-interactive">
+
+<template>
+<style>
+:host {
+    display: block;
+    padding: 10px;
+}
+
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<div hidden$="{{!shouldRender}}">
+    <!-- TODO Should only fire when 'shouldRender' is true -->
+    <iron-ajax
+        auto
+        url="[[baseUrl]]dashboard/videos?identifier=[[node]]"
+        handle-as="json"
+        on-response="_handleVideo"
+        debounce-duration="300"></iron-ajax>
+    
+    <paper-card heading="Populære Videoer" >
+        <div class="card-content">
+            This should only be shown for videos
+            {{shouldRender}}
+        </div>
+    </paper-card>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-dash-d-answers-interactive',
+    properties: {
+        node: {
+            type: String
+        },
+        periodFrom: {
+            type: Number
+        },
+        periodTo: {
+            type: Number
+        },
+        baseUrl: {
+            type: String
+        },
+        shouldRender: {
+            type: Boolean,
+            computed: "_computeShouldRender(node)"
+        }
+    },
+
+    _computeShouldRender: function(node) {
+        return node !== undefined && node.indexOf("video") === 0;
+    },
+
+    _handleVideo: function(event) {
+        var response = event.target.lastResponse;
+        console.log(response);
+    }
+});
+</script>
+</dom-module>

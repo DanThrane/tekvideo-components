@@ -11,6 +11,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="tekvideo-dash-s-views-graph.html">
 <link rel="import" href="tekvideo-dash-s-views-popular.html">
 <link rel="import" href="tekvideo-dash-s-answers-interactive.html">
+<link rel="import" href="tekvideo-dash-d-answers-interactive.html">
+<link rel="import" href="tekvideo-player.html">
 
 <dom-module id="tekvideo-dashboard">
 <template>
@@ -70,7 +72,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         base-url="{{baseUrl}}">
     </tekvideo-dash-s-answers-interactive>
 
-    
+    <tekvideo-dash-d-answers-interactive
+        class="stats-card"
+        node="{{node}}"
+        period-from="{{periodFrom}}"
+        period-to="{{periodTo}}"
+        base-url="{{baseUrl}}">
+    </tekvideo-dash-d-answers-interactive>
+
+    <tekvideo-player
+        video-id="uxNWDSYY0_Y"
+        is-you-tube="true"
+        autoplay="false"
+        timeline='[{"title":"Komplekse tal og multiplikation","timecode":0,"questions":[{"title":"Spørgsmål 1","timecode":0,"fields":[{"name":"field-0","topoffset":227.1499176276771,"leftoffset":133.45690454124187,"answer":{"type":"expression","value":"1"}},{"name":"field-1","topoffset":228.9291598023064,"leftoffset":234.8841519925857,"answer":{"type":"expression","value":"5"}}],"visible":false,"shown":false},{"title":"Spørgsmål 2","timecode":523,"fields":[{"name":"field-0","topoffset":104.3822075782537,"leftoffset":339.870250231696,"answer":{"type":"expression","value":"2"}},{"name":"field-1","topoffset":103.78912685337725,"leftoffset":438.33178869323444,"answer":{"type":"expression","value":"4"}}],"visible":false,"shown":false}]}]'>
+    </tekvideo-player>
 
 </template>
 
