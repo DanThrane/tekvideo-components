@@ -129,7 +129,8 @@ tekvideo-math-field {
             },
             timeline: {
                 type: Array,
-                value: []
+                value: [],
+                observer: "_timelineChanged"
             },
             videoId: {
                 type: String,
@@ -144,6 +145,9 @@ tekvideo-math-field {
                 type: Boolean,
                 value: true
             }
+        },
+        _timelineChanged: function() {
+            this._initQuestions();
         },
         _videoChanged: function() {
             if (this.videoId != null) {
@@ -185,7 +189,6 @@ tekvideo-math-field {
                     }, true);
                 });
 
-                this._initQuestions();
                 setTimeout(function () { self._initializeSize(); }, 500);
                 this._initEventHandlers();
             }
@@ -298,6 +301,7 @@ tekvideo-math-field {
             }, true);
         },
         _initQuestions: function() {
+            this._questions = [];
             for (var i = this.timeline.length - 1; i >= 0; i--) {
                 var item = this.timeline[i];
                 this._questions = this._questions.concat(item.questions);
@@ -396,16 +400,5 @@ tekvideo-math-field {
     });
 })();
 
-/*
-var self = this;
-if (this.player !== null) this.player.destroy();
-this.player = new InteractiveVideoPlayer(this.element.find(".player-container"));
-this.player.autoplay = false;
-
-this.player.startPlayer(this.video.youtubeId, this.video.videoType, this.timeline);
-this._cachedPlayer.on("questionShown", function (e) {
-    self.onQuestionSelected(e.subjectId, e.questionId);
-});
-*/
 </script>
 </dom-module>
