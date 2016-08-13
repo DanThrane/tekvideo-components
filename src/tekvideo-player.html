@@ -81,15 +81,17 @@ tekvideo-math-field {
         <ul id="video-navigation">
             <template is="dom-repeat" items="{{timeline}}" as="subject" indexAs="subjectIndex">
                 <li>
-                    <a href="#" id="navitem[[subjectIndex]]">
-                    <tekvideo-timecode timecode="{{subject.timecode}}"></tekvideo-timecode>
-                    &mdash; {{subject.title}}
+                    <a href="#" id="navitem[[subjectIndex]]" 
+                       on-click="_handleNavigationClick">
+                        <tekvideo-timecode timecode="{{subject.timecode}}"></tekvideo-timecode>
+                        &mdash; {{subject.title}}
                     </a>
                 </li>
                 <ul>
                     <template is="dom-repeat" items="{{subject.questions}}" as="question">
                         <li>
-                            <a href="#" id="navitem[[subjectIndex]][[index]]">
+                            <a href="#" id="navitem[[subjectIndex]][[index]]" 
+                               on-click="_handleNavigationClick">
                                 <tekvideo-timecode timecode="{{question.timecode}}">
                                 </tekvideo-timecode>
                                 &mdash; {{question.title}}
@@ -281,20 +283,19 @@ tekvideo-math-field {
                 }                
             });
         },
-        _handleNavigationClick: function (item) {
+        _handleNavigationClick: function (event) {
             var self = this;
-            return function (e) {
-                var skippedAt = self._cachedPlayer.currentTime();
-                e.preventDefault();
-                self._cachedPlayer.currentTime(item.timecode);
-                self.fire("analytics", {
-                    kind: "SKIP_TO_CONTENT",
-                    video: document.location.href,
-                    label: item.title,
-                    videoTimeCode: self._cachedPlayer.currentTime(),
-                    skippedAt: skippedAt
-                }, true);
-            };
+            var item = event.model.question || event.model.subject;
+            event.preventDefault();
+            var skippedAt = self._cachedPlayer.currentTime();
+            self._cachedPlayer.currentTime(item.timecode);
+            self.fire("analytics", {
+                kind: "SKIP_TO_CONTENT",
+                video: document.location.href,
+                label: item.title,
+                videoTimeCode: self._cachedPlayer.currentTime(),
+                skippedAt: skippedAt
+            }, true);
         },
         _initQuestions: function() {
             for (var i = this.timeline.length - 1; i >= 0; i--) {
