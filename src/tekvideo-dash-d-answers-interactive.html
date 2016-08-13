@@ -1,11 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="tekvideo-player.html">
+<link rel="import" href="tekvideo-aint-raw.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="tekvideo-dash-d-answers-interactive">
 
 <template>
-<style>
+<style include="iron-flex"></style>
+<style is="custom-style">
 :host {
     display: block;
 }
@@ -13,6 +16,16 @@
 paper-card {
     width: 100%;
     height: 100%;
+}
+
+#analysis-container {
+    @apply(--layout-vertical);
+    @apply(--layout-center);
+}
+
+#analysis-container * {
+    padding: 10px;
+    width: 50%;
 }
 </style>
 
@@ -45,6 +58,11 @@ paper-card {
         <div class="card-content">
             <tekvideo-player id="player" disable-check-button>
             </tekvideo-player>
+
+            <div id="analysis-container">
+                <tekvideo-aint-raw answers="{{answers}}" timeline="{{timeline}}" selected-question="{{_selectedQuestion}}">
+                </tekvideo-aint-raw>
+            </div>
         </div>
     </paper-card>
 </div>
@@ -74,14 +92,20 @@ Polymer({
         _videoId: {
             type: String,
             computed: "_computeVideoId(node)"
+        },
+        _selectedQuestion: {
+            type: Object,
+            value: {}
         }
     },
 
     attached: function() {
         var self = this;
-        this.$.player.addEventListener("questionShown", function(event) {
-            var player = self.$.player;
+        var player = this.$.player;
+        player.addEventListener("questionShown", function(event) {
             var question = event.detail;
+            self._selectedQuestion = question;
+            console.log(self._selectedQuestion);
             var values = question.question.fields.map(function(element) {
                 return "\\text{"+element.name+"}";
             });

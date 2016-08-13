@@ -251,7 +251,7 @@ tekvideo-math-field {
                             field.topoffset,
                             field.leftoffset);
                     }
-                    var ids = this._getVisibleQuestionID();
+                    var ids = this.getVisibleQuestionID();
                     this.fire("questionShown", {
                         subjectId: ids[0],
                         questionId: ids[1],
@@ -264,8 +264,8 @@ tekvideo-math-field {
             var self = this;
             $(this.$.checkButton).click(function (e) {
                 e.preventDefault();
-                var questionID = self._getVisibleQuestionID();
-                var question = self._getVisibleQuestion();
+                var questionID = self.getVisibleQuestionID();
+                var question = self.getVisibleQuestion();
                 for (var i = 0; i < question.fields.length; i++) {
                     var field = question.fields[i];
                     console.log(field);
@@ -376,7 +376,7 @@ tekvideo-math-field {
                     return answer.validator(value);
             }
         },
-        _getVisibleQuestionID: function() {
+        getVisibleQuestionID: function() {
             for (var i = 0; i < this.timeline.length; i++) {
                 var item = this.timeline[i];
                 for (var j = 0; j < item.questions.length; j++) {
@@ -388,8 +388,8 @@ tekvideo-math-field {
             }
             return null;
         },
-        _getVisibleQuestion: function() {
-            var id = this._getVisibleQuestionID();
+        getVisibleQuestion: function() {
+            var id = this.getVisibleQuestionID();
             if (id === null) return null;
             return this.timeline[id[0]].questions[id[1]];
         },
