@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="tekvideo-dash-s-views-graph.html">
 <link rel="import" href="tekvideo-dash-s-views-popular.html">
+<link rel="import" href="tekvideo-dash-s-answers-interactive.html">
 
 <dom-module id="tekvideo-dashboard">
 <template>
@@ -60,6 +61,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         period-to="{{periodTo}}"
         base-url="{{baseUrl}}">
     </tekvideo-dash-s-views-popular>
+
+    <tekvideo-dash-s-answers-interactive
+        class="stats-card"
+        node="{{node}}"
+        period-from="{{periodFrom}}"
+        period-to="{{periodTo}}"
+        base-url="{{baseUrl}}">
+    </tekvideo-dash-s-answers-interactive>
+
+    
 
 </template>
 
