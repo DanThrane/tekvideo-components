@@ -1,0 +1,240 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable.html">
+<link rel="import" href="../bower_components/paper-datatable/paper-datatable-column.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+
+<dom-module id="tekvideo-dash-s-students">
+
+<template>
+<style include="iron-flex"></style>
+<style>
+:host {
+    display: block;
+}
+
+paper-card {
+    width: 100%;
+    height: 100%;
+}
+
+.field-container paper-checkbox {
+    padding-right: 16px;
+}
+
+</style>
+
+<paper-card heading="Bruger deltagelse">
+    <iron-ajax
+        auto
+        id="participationEndpoint"
+        url="[[baseUrl]]dashboard/participationNew?identifier=[[node]]&periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
+        handle-as="json"
+        last-response="{{participation}}"
+        debounce-duration="300"></iron-ajax>
+
+    <div class="card-content">
+        <paper-button id="moreInfo" on-click="_toggle">
+            <iron-icon icon="filter-list" id="toggleIcon"></iron-icon>
+            <span id="moreInfoText">Vis filtre</span>
+        </paper-button>
+        <iron-collapse id="collapse">
+            <div class="layout horizontal wrap" style="margin: 10px">
+                <template is="dom-repeat" items="{{computeColumns(participation)}}">
+                    <div style="padding: 10px;">
+                        <paper-checkbox 
+                            checked="{{isEnabled(participation, enabledQuestions, item.identifier)}}" 
+                            on-change="enableChange">
+                            {{item.name}}
+                        </paper-checkbox>
+                    </div>
+                </template>
+            </div>
+        </iron-collapse>
+        
+        <paper-datatable id="datatable" data="{{computeData(participation)}}">
+            <div no-results>
+                Ingen data tilgængelig
+            </div>
+            <paper-datatable-column header="Bruger" property="username" type="String" sortable sorted></paper-datatable-column>
+            <paper-datatable-column 
+                    header="Tilmeldt kurset" 
+                    property="isStudent" 
+                    type="Boolean" 
+                    sortable>
+                    <template>
+                        <div hidden$="{{!value}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
+                        <div hidden$="{{value}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
+                    </template>
+                </paper-datatable-column>
+            <template is="dom-repeat" items="{{computeColumns(participation)}}">
+                <paper-datatable-column 
+                    header="{{item.name}}" 
+                    property="{{item.identifier}}" 
+                    type="Boolean" 
+                    sortable 
+                    inactive="{{!isEnabled(participation, enabledQuestions, item.identifier)}}">
+                    <template>
+                        <div hidden$="{{!value}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
+                        <div hidden$="{{value}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
+                    </template>
+                </paper-datatable-column>
+            </template>
+        </paper-datatable>
+    </div>
+</paper-card>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tekvideo-dash-s-students',
+    properties: {
+        node: {
+            type: String
+        },
+        periodFrom: {
+            type: Number
+        },
+        periodTo: {
+            type: Number
+        },
+        baseUrl: {
+            type: String
+        },
+        enabledQuestions: {
+            type: Object,
+            value: {},
+        }
+    },
+    computeData: function(participation) {
+        var result = {};
+        var self = this;
+
+        this._values(participation.result.details).map(function (details) {
+            var graded = self._performGrading(details);
+            for (var userId in graded) {
+                var userGrades = graded[userId];
+                if (!(userId in result)) {
+                    result[userId] = {
+                        user: userGrades.user,
+                        username: userGrades.user.username,
+                        isStudent: userGrades.isStudent
+                    };
+                    // This really shouldn't be needed, figure out why not all 
+                    // of them are populated
+                    var children = participation.result.children;
+                    for (var i = 0; i < children.length; i++) {
+                        console.log(children[i]);
+                        result[userId][children[i].identifier] = false;
+                    }
+                }
+                result[userId][details.identifier.identifier] = userGrades.passed;
+            }
+        });
+        var output = this._values(result);
+        console.log(output);
+        return output;
+    },
+    _values: function(array) {
+        var result = [];
+        for (var property in array) {
+            if (array.hasOwnProperty(property)) {
+                result.push(array[property]);
+            }
+        }
+        return result;
+    },
+    _performGrading: function(report) {
+        var self = this;
+        if (report.children.length === 0) {
+            var participation = report.participation.map(function(userParticipation) {
+                return {
+                    user: userParticipation.user,
+                    isStudent : userParticipation.isStudent,
+                    identifier: report.identifier,
+                    entries: 1,
+                    passedCount: userParticipation.stats.score,
+                    passed: userParticipation.stats.score === userParticipation.stats.maxScore
+                }
+            });
+            var result = {};
+            for (var i = 0; i < participation.length; i++) {
+                var userParticipation = participation[i];
+                result[userParticipation.user.id] = userParticipation;
+            }
+            //console.log("Leaf: ", result);
+            return result;
+        } else {
+            var childReports = self._values(report.details).map(function(childReport) {
+                return self._performGrading(childReport);
+            });
+            var mergedReport = {};
+            for (var i = 0; i < childReports.length; i++) {
+                var childReport = childReports[i];
+                for (var user in childReport) {
+                    //console.log(user, childReport);
+                    var userReport = childReport[user];
+                    if (!(user in mergedReport)) {
+                        mergedReport[user] = {
+                            user: userReport.user,
+                            isStudent: userReport.isStudent,
+                            identifier: report.identifier,
+                            entries: 0,
+                            passedCount: 0
+                        };
+                    }
+                    mergedReport[user].entries++;
+                    if (userReport.passed) {
+                        mergedReport[user].passedCount++;
+                    }
+                }
+            }
+            // At this point we can compare entries and passed count and 
+            // determine if we passed. This is probably the only part we want 
+            // to abstract away
+            for (var user in mergedReport) {
+                var userReport = mergedReport[user];
+                userReport.passed = userReport.entries === userReport.passedCount;
+            }
+            //console.log("Node: ", mergedReport);
+            return mergedReport;
+        }
+    },
+    computeColumns: function(participation) {
+        return participation.result.children;
+    },
+    isEnabled: function(timeline, enabledQuestions, nodeId) {
+        var status = enabledQuestions[nodeId];
+        if (status === undefined) {
+            status = enabledQuestions[nodeId] = false;
+        }
+        return status;
+    },
+    enableChange: function(e) {
+        // TODO Having some trouble making it fire the property change even 
+        // without copying the element. Using "this.set" for some reason 
+        // didn't work
+        console.log("Enabling change: " , e.model.item);
+        var copy = JSON.parse(JSON.stringify(this.enabledQuestions));
+        copy[e.model.item.identifier] = !copy[e.model.item.identifier];
+        this.enabledQuestions = copy;
+    },
+    _toggle: function () {
+        var collapse = this.$.collapse;
+        this.$.moreInfoText.textContent = collapse.opened ? "Vis filtre" : 
+            "Skjul filtre";
+        collapse.toggle();
+    },
+    _handleStats: function() {
+        console.log("Got some stats back: ", this.$.participationEndpoint.lastResponse);
+    }
+});
+</script>
+</dom-module>

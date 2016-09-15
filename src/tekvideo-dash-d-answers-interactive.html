@@ -2,6 +2,8 @@
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="tekvideo-player.html">
 <link rel="import" href="tekvideo-aint-raw.html">
+<link rel="import" href="tekvideo-aint-breakdown.html">
+<link rel="import" href="tekvideo-aint-participation.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <dom-module id="tekvideo-dash-d-answers-interactive">
@@ -25,7 +27,8 @@ paper-card {
 
 #analysis-container * {
     padding: 10px;
-    width: 50%;
+    min-width: 80%;
+    max-width: 600px;
 }
 </style>
 
@@ -54,14 +57,30 @@ paper-card {
         last-response="{{answers}}"
         debounce-duration="300"></iron-ajax>
 
+    <iron-ajax
+        auto="{{shouldRender}}"
+        id="answersEndpoint"
+        url="[[baseUrl]]dashboard/students?identifier=[[node]]"
+        handle-as="json"
+        last-response="{{students}}"
+        debounce-duration="300"></iron-ajax>
+
     <paper-card heading="Interaktiv svar analyse">
         <div class="card-content">
             <tekvideo-player id="player" disable-check-button>
             </tekvideo-player>
 
             <div id="analysis-container">
-                <tekvideo-aint-raw answers="{{answers}}" timeline="{{timeline}}" selected-question="{{_selectedQuestion}}">
+                <tekvideo-aint-raw 
+                    answers="{{answers}}" 
+                    timeline="{{timeline}}" 
+                    selected-question="{{_selectedQuestion}}">
                 </tekvideo-aint-raw>
+                <tekvideo-aint-breakdown
+                    answers="{{answers}}" 
+                    timeline="{{timeline}}" 
+                    selected-question="{{_selectedQuestion}}">
+                </tekvideo-aint-breakdown>
             </div>
         </div>
     </paper-card>

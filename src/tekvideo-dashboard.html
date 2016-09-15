@@ -16,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="tekvideo-math-field.html">
 <link rel="import" href="tekvideo-player.html">
+<link rel="import" href="tekvideo-dash-s-students.html">
 
 <dom-module id="tekvideo-dashboard">
 <template>
@@ -53,10 +54,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     #container * {
         margin: 10px;
+        width: 960px;
     }
     </style>
 
-    <div id="container" fullbleed class="layout vertical">
+    <div id="container" fullbleed class="layout vertical center">
         <tekvideo-math-field></tekvideo-math-field>
         <tekvideo-dash-s-views-graph
             class="stats-card"
@@ -89,6 +91,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             period-to="{{periodTo}}"
             base-url="{{baseUrl}}">
         </tekvideo-dash-d-answers-interactive>
+
+        <tekvideo-dash-s-students
+            class="stats-card"
+            node="{{node}}"
+            period-from="{{periodFrom}}"
+            period-to="{{periodTo}}"
+            base-url="{{baseUrl}}">
+        </tekvideo-dash-s-students>
     </div>
 
     

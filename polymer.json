@@ -2,8 +2,8 @@
   "entrypoint": "index.html",
   "shell": "src/tekvideo-dashboard.html",
   "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html"
+    "src/tekvideo-aint-raw.html",
+    "src/tekvideo-s-views-graph.html",
+    "src/tekvideo-s-views-popular.html"
   ]
 }
