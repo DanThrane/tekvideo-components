@@ -8,6 +8,7 @@
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
 
 
 <dom-module id="tekvideo-dash-s-students">
@@ -28,37 +29,49 @@ paper-card {
     padding-right: 16px;
 }
 
+.free-text-search > paper-input {
+    margin-right: 30px;
+}
+
+.free-text-search > h4 {
+    margin-bottom: 0;
+}
+
 </style>
 
 <paper-card heading="Bruger deltagelse">
     <iron-ajax
         auto
         id="participationEndpoint"
-        url="[[baseUrl]]dashboard/participationNew?identifier=[[node]]&periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
+        url="[[baseUrl]]dashboard/participation?identifier=[[node]]&periodFrom=[[periodFrom]]&periodTo=[[periodTo]]"
         handle-as="json"
         last-response="{{participation}}"
-        debounce-duration="300"></iron-ajax>
+        debounce-duration="300"
+        loading="{{_isLoading}}"></iron-ajax>
 
     <div class="card-content">
-        <paper-button id="moreInfo" on-click="_toggle">
-            <iron-icon icon="filter-list" id="toggleIcon"></iron-icon>
-            <span id="moreInfoText">Vis filtre</span>
-        </paper-button>
-        <iron-collapse id="collapse">
-            <div class="layout horizontal wrap" style="margin: 10px">
-                <template is="dom-repeat" items="{{computeColumns(participation)}}">
-                    <div style="padding: 10px;">
-                        <paper-checkbox 
-                            checked="{{isEnabled(participation, enabledQuestions, item.identifier)}}" 
-                            on-change="enableChange">
-                            {{item.name}}
-                        </paper-checkbox>
-                    </div>
-                </template>
+        <div class="horizontal layout">
+            <paper-progress indeterminate hidden$="{{!_isLoading}}" class="flex">
+            </paper-progress>
+        </div>
+
+        <div class="horizontal layout">
+            <div class="flex-3 free-text-search">
+                <h4>Fri-tekst søgning</h4>
+                <paper-input value="{{searchUser}}" label="Bruger">
+                    <iron-icon icon="search" prefix></iron-icon>
+                </paper-input>
+                <paper-input value="{{searchExercise}}" label="Opgave navn">
+                    <iron-icon icon="search" prefix></iron-icon>
+                </paper-input>
             </div>
-        </iron-collapse>
-        
-        <paper-datatable id="datatable" data="{{computeData(participation)}}">
+            <div class="flex">
+                <h4>Bruger attributter</h4>
+                <paper-checkbox checked="{{keepStudents}}">Tilmeldt</paper-checkbox> <br />
+                <paper-checkbox checked="{{keepGuests}}">Gæst</paper-checkbox> <br />
+            </div>
+        </div>
+        <paper-datatable id="datatable" data="{{computeData(participation, keepGuests, keepStudents, searchUser)}}" style="padding-bottom: 20px">
             <div no-results>
                 Ingen data tilgængelig
             </div>
@@ -76,17 +89,38 @@ paper-card {
             <template is="dom-repeat" items="{{computeColumns(participation)}}">
                 <paper-datatable-column 
                     header="{{item.name}}" 
-                    property="{{item.identifier}}" 
-                    type="Boolean" 
-                    sortable 
-                    inactive="{{!isEnabled(participation, enabledQuestions, item.identifier)}}">
+                    property="{{item.nodeId}}"
+                    inactive="{{_computeIsColumnActive(item, searchExercise)}}"
+                    type="Number" 
+                    sortable>
                     <template>
-                        <div hidden$="{{!value}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
-                        <div hidden$="{{value}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
+                        <div hidden$="{{!_computeIsGreen(value)}}" style="color: green"><iron-icon icon="check"></iron-icon></div>
+                        <div hidden$="{{!_computeIsYellow(value)}}" style="color: #FFC107"><iron-icon icon="remove"></iron-icon></div>
+                        <div hidden$="{{!_computeIsRed(value)}}" style="color: red"><iron-icon icon="clear"></iron-icon></div>
                     </template>
                 </paper-datatable-column>
             </template>
         </paper-datatable>
+
+        <div>
+            <b>Forklaring</b>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <span style="color: green"><iron-icon icon="check"></iron-icon></span> Set og bestået
+                        </td>
+                        <td>
+                            <span style="color: #FFC107"><iron-icon icon="remove"></iron-icon></span> Set og ikke bestået 
+                        </td>
+                        <td>
+                            <span style="color: red"><iron-icon icon="clear"></iron-icon></span> Ikke set
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </paper-card>
 
@@ -111,129 +145,81 @@ Polymer({
         enabledQuestions: {
             type: Object,
             value: {},
-        }
+        },
+        keepGuests: {
+            type: Boolean,
+            value: true
+        },
+        keepStudents: {
+            type: Boolean,
+            value: true
+        },
     },
-    computeData: function(participation) {
-        var result = {};
-        var self = this;
-
-        this._values(participation.result.details).map(function (details) {
-            var graded = self._performGrading(details);
-            for (var userId in graded) {
-                var userGrades = graded[userId];
-                if (!(userId in result)) {
-                    result[userId] = {
-                        user: userGrades.user,
-                        username: userGrades.user.username,
-                        isStudent: userGrades.isStudent
-                    };
-                    // This really shouldn't be needed, figure out why not all 
-                    // of them are populated
-                    var children = participation.result.children;
-                    for (var i = 0; i < children.length; i++) {
-                        console.log(children[i]);
-                        result[userId][children[i].identifier] = false;
+    computeData: function(participation, keepGuests, keepStudents, searchUser) {
+        var userData = participation.result.users;
+        return userData
+            .filter(function (user) {
+                if (searchUser.length > 0) {
+                    if (user.username.toLowerCase().indexOf(searchUser.toLowerCase()) === -1) {
+                        return false;
                     }
                 }
-                result[userId][details.identifier.identifier] = userGrades.passed;
-            }
-        });
-        var output = this._values(result);
-        console.log(output);
-        return output;
+                if (user.isStudent && keepStudents) return true;
+                if (!user.isStudent && keepGuests) return true;
+                return false;
+            })
+            .map(function(user) {
+                var result = {
+                    username: user.username,
+                    id: user.id,
+                    isStudent: user.isStudent,
+                    isCas: user.isCas
+                };
+
+                for (key in user.answers) {
+                    var data = user.answers[key];
+                    var state;
+
+                    if (!data.seen) {
+                        state = 0;
+                    } else {
+                        if (data.points < participation.result.exercises[key].maxPoints) {
+                            state = 1;
+                        } else {
+                            state = 2;
+                        }
+                    }
+                    result[key] = state;
+                }
+                return result;
+            });
     },
-    _values: function(array) {
+    computeColumns: function(participation, searchExercise) {
+        var exercisesObject = participation.result.exercises;
         var result = [];
-        for (var property in array) {
-            if (array.hasOwnProperty(property)) {
-                result.push(array[property]);
-            }
+        for (key in exercisesObject) {
+            var exercise = exercisesObject[key];
+            result.push(exercise);
         }
+        console.log(result);
         return result;
     },
-    _performGrading: function(report) {
-        var self = this;
-        if (report.children.length === 0) {
-            var participation = report.participation.map(function(userParticipation) {
-                return {
-                    user: userParticipation.user,
-                    isStudent : userParticipation.isStudent,
-                    identifier: report.identifier,
-                    entries: 1,
-                    passedCount: userParticipation.stats.score,
-                    passed: userParticipation.stats.score === userParticipation.stats.maxScore
-                }
-            });
-            var result = {};
-            for (var i = 0; i < participation.length; i++) {
-                var userParticipation = participation[i];
-                result[userParticipation.user.id] = userParticipation;
+    _computeIsColumnActive: function(item, searchExercise) {
+        if (searchExercise.length > 0) {
+            if (item.name.toLowerCase().indexOf(searchExercise.toLowerCase()) === -1) {
+                return true;
             }
-            //console.log("Leaf: ", result);
-            return result;
-        } else {
-            var childReports = self._values(report.details).map(function(childReport) {
-                return self._performGrading(childReport);
-            });
-            var mergedReport = {};
-            for (var i = 0; i < childReports.length; i++) {
-                var childReport = childReports[i];
-                for (var user in childReport) {
-                    //console.log(user, childReport);
-                    var userReport = childReport[user];
-                    if (!(user in mergedReport)) {
-                        mergedReport[user] = {
-                            user: userReport.user,
-                            isStudent: userReport.isStudent,
-                            identifier: report.identifier,
-                            entries: 0,
-                            passedCount: 0
-                        };
-                    }
-                    mergedReport[user].entries++;
-                    if (userReport.passed) {
-                        mergedReport[user].passedCount++;
-                    }
-                }
-            }
-            // At this point we can compare entries and passed count and 
-            // determine if we passed. This is probably the only part we want 
-            // to abstract away
-            for (var user in mergedReport) {
-                var userReport = mergedReport[user];
-                userReport.passed = userReport.entries === userReport.passedCount;
-            }
-            //console.log("Node: ", mergedReport);
-            return mergedReport;
         }
+        return false;
     },
-    computeColumns: function(participation) {
-        return participation.result.children;
+    _computeIsRed: function(value) {
+        return value === 0;
     },
-    isEnabled: function(timeline, enabledQuestions, nodeId) {
-        var status = enabledQuestions[nodeId];
-        if (status === undefined) {
-            status = enabledQuestions[nodeId] = false;
-        }
-        return status;
+    _computeIsYellow: function(value) {
+        return value === 1;
     },
-    enableChange: function(e) {
-        // TODO Having some trouble making it fire the property change even 
-        // without copying the element. Using "this.set" for some reason 
-        // didn't work
-        console.log("Enabling change: " , e.model.item);
-        var copy = JSON.parse(JSON.stringify(this.enabledQuestions));
-        copy[e.model.item.identifier] = !copy[e.model.item.identifier];
-        this.enabledQuestions = copy;
-    },
-    _toggle: function () {
-        var collapse = this.$.collapse;
-        this.$.moreInfoText.textContent = collapse.opened ? "Vis filtre" : 
-            "Skjul filtre";
-        collapse.toggle();
-    },
-    _handleStats: function() {
-        console.log("Got some stats back: ", this.$.participationEndpoint.lastResponse);
+    _computeIsGreen: function(value) {
+        return value === 2;
     }
 });
 </script>
