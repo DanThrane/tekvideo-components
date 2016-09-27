@@ -17,6 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="tekvideo-math-field.html">
 <link rel="import" href="tekvideo-player.html">
 <link rel="import" href="tekvideo-dash-s-students.html">
+<link rel="import" href="tekvideo-dash-hero.html">
 
 <dom-module id="tekvideo-dashboard">
 <template>
@@ -59,8 +60,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
 
     <div id="container" fullbleed class="layout vertical center">
-    <!--
-        <tekvideo-math-field></tekvideo-math-field>
+        <tekvideo-dash-hero
+            class="state-card"
+            node="{{node}}"
+            period-from="{{periodFrom}}"
+            period-to="{{periodTo}}"
+            base-url="{{baseUrl}}">
+        </tekvideo-dash-hero>
+        <!--
         <tekvideo-dash-s-views-graph
             class="stats-card"
             node="{{node}}"
@@ -92,7 +99,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             period-to="{{periodTo}}"
             base-url="{{baseUrl}}">
         </tekvideo-dash-d-answers-interactive>
--->
+
         <tekvideo-dash-s-students
             class="stats-card"
             node="{{node}}"
@@ -100,9 +107,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             period-to="{{periodTo}}"
             base-url="{{baseUrl}}">
         </tekvideo-dash-s-students>
+        -->
     </div>
-
-    
 
 </template>
 
