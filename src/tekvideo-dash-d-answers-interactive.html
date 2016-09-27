@@ -24,12 +24,18 @@ paper-card {
     @apply(--layout-center);
 }
 
+#analysis-container {
+    margin-top: 20px;
+}
+
 #analysis-container * {
-    padding: 10px;
-    min-width: 80%;
-    max-width: 600px;
+    width: 100%;
 }
 </style>
+
+<div hidden$="{{shouldRender}}">
+    Kan kun vise data for videoer
+</div>
 
 <div hidden$="{{!shouldRender}}">
     <iron-ajax
@@ -64,20 +70,18 @@ paper-card {
         last-response="{{students}}"
         debounce-duration="300"></iron-ajax>
 
-    <paper-card heading="Interaktiv svar analyse">
-        <div class="card-content">
-            <tekvideo-player id="player" disable-check-button>
-            </tekvideo-player>
 
-            <div id="analysis-container">
-                <tekvideo-aint-raw 
-                    answers="{{answers}}" 
-                    timeline="{{timeline}}" 
-                    selected-question="{{_selectedQuestion}}">
-                </tekvideo-aint-raw>
-            </div>
-        </div>
-    </paper-card>
+    <h1>Interaktiv svar analyse</h1>
+
+    <tekvideo-player id="player" disable-check-button></tekvideo-player>
+    
+    <div id="analysis-container">
+        <tekvideo-aint-raw 
+            answers="{{answers}}" 
+            timeline="{{timeline}}" 
+            selected-question="{{_selectedQuestion}}">
+        </tekvideo-aint-raw>
+    </div>
 </div>
 
 </template>

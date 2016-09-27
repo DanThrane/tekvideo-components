@@ -59,7 +59,7 @@ paper-card {
     </div>
     <div class="card-actions">
         <paper-button title="Vis data" on-click="_toggle">
-            <iron-icon id="toggleIcon" icon="hardware:keyboard-arrow-up"></iron-icon>
+            <iron-icon id="toggleIcon" icon="expand-more"></iron-icon>
             Vis data
         </paper-button>
 
@@ -225,8 +225,7 @@ Polymer({
     _toggle: function () {
         var moreInfo = this.$.moreInfo;
         var icon = this.$.toggleIcon;
-        icon.icon = moreInfo.opened ? 'hardware:keyboard-arrow-up'
-                                          : 'hardware:keyboard-arrow-down';
+        icon.icon = moreInfo.opened ? 'expand-more' : 'expand-less';
         moreInfo.toggle();
     }
 });
