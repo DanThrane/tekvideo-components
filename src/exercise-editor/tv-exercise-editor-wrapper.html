@@ -1,0 +1,48 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+
+<dom-module id="tv-exercise-editor-wrapper">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<b>{{name}}</b>
+<paper-icon-button icon="delete" on-click="delete">Delete</paper-icon-button>
+<paper-icon-button icon="unfold-more" on-click="toggle">Toggle</paper-icon-button>
+
+<iron-collapse id="collapse">
+	<div id="insertionPoint">
+		<content></content>
+	</div>
+</iron-collapse>
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-editor-wrapper',
+    properties: {
+    	name: {
+    		type: String,
+    		value: ""
+    	}
+    },
+    toggle: function() {
+    	this.$.collapse.toggle();
+    },
+    delete: function() {
+    	console.log("Delete");
+    	this.fire("delete");
+    }
+});
+
+</script>
+</dom-module>

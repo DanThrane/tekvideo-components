@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+rm -rf ../tekvideo.sdu.dk/grails-app/assets/javascripts/dashboard2
+cp -r src ../tekvideo.sdu.dk/grails-app/assets/javascripts/dashboard2
+cp -r bower_components ../tekvideo.sdu.dk/grails-app/assets/javascripts

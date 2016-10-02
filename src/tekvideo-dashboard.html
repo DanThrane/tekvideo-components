@@ -1,12 +1,3 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
@@ -86,20 +77,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'tekvideo-dashboard',
         properties: {
             node: {
-                type: String,
-                value: "course/7"
+                type: String
             },
             periodFrom: {
-                type: Number,
-                value: 0
+                type: Number
             },
             periodTo: {
-                type: Number,
-                value: 1471008336499
+                type: Number
             },
             baseUrl: {
-                type: String,
-                value: "http://localhost:8080/tekvideo/"
+                type: String
             },
             routeData: {
                 type: Object,

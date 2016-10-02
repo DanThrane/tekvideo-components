@@ -1,0 +1,142 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="tv-exercise-editor-wrapper.html">
+
+<link rel="import" href="tv-exercise-markdown.html">
+<link rel="import" href="tv-exercise-markdown-editor.html">
+
+<dom-module id="tv-exercise-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+paper-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.sidebar {
+    margin: 15px;
+    min-width: 300px;
+}
+</style>
+
+<div class="layout horizontal">
+    <div class="layout vertical sidebar">
+        <paper-input value="{{name}}" label="Opgave navn"></paper-input>
+
+        <div id="editors">
+        </div>
+    </div>
+    <div class="flex">
+        <div id="preview">
+        </div>
+    </div>
+</div>
+
+<paper-fab id="addWidget" icon="add" title="Tilføj widget" on-click="_addWidget"></paper-fab>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-editor',
+    properties: {
+        name: {
+            type: String,
+            value: ""
+        },
+        widgets: {
+            type: Array,
+            value: []
+        },
+        _configuration: {
+            type: Object,
+            value: {}
+        }
+    },
+    attached: function() {
+        this._registerWidgetType(
+            "markdown", 
+            "tv-exercise-markdown", 
+            "tv-exercise-markdown-editor",
+            ["content"]
+        );
+
+        this.addWidget({
+            "type": "markdown",
+            "properties": {
+                "content": "# Hello\nThis is __something__"
+            }
+        });
+    },
+    addWidget: function(widget) {
+        var self = this;
+        this.widgets.push(widget);
+
+        var widgetConfig = this._configuration[widget.type];
+        if (widgetConfig) {
+            var editor = document.createElement(widgetConfig.editor);
+            editor.id = "editor-" + this.widgets.length;
+
+            var wrapper = document.createElement("tv-exercise-editor-wrapper");
+            wrapper.appendChild(editor);
+            wrapper.name = widget.type + "-" + this.widgets.length;
+            this.$.editors.appendChild(wrapper);
+
+            var component = document.createElement(widgetConfig.component);
+            component.id = "component-" + this.widgets.length;
+            this.$.preview.appendChild(component);
+
+            for (var i = 0; i < widgetConfig.properties.length; i++) {
+                var property = widgetConfig.properties[i];
+                editor.addEventListener(property + "-changed", function(ev) {
+                    component[property] = editor[property];
+                    widget.properties[property] = editor[property];
+                });
+            }
+
+            for (var property in widget.properties) {
+                var value = widget.properties[property];
+                editor[property] = value;
+            }
+
+            wrapper.addEventListener("delete", function() {
+                var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
+                self.$.editors.removeChild(wrapper);
+                self.$.preview.removeChild(component);
+                self.widgets.splice(index, 1);
+            })
+        }
+    },
+    _registerWidgetType: function(name, component, editor, properties) {
+        this._configuration[name] = {
+            name: name,
+            component: component,
+            editor: editor,
+            properties: properties
+        };
+    },
+    _addWidget: function() {
+        this.addWidget({
+            "type": "markdown",
+            "properties": {
+                "content": "# Hello\nThis is __something__"
+            }
+        });
+    }
+});
+</script>
+</dom-module>
