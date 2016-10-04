@@ -1,0 +1,79 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="tv-exercise-multiple-choice">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<form>
+    <ul>
+        <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+            <li>
+                <input type="{{_computeType(selectmultiple)}}" name="{{index}}" id="{{index}}">
+                <label for$="{{index}}">[[item.title]]</label>
+            </li>
+        </template>
+    </ul>
+</form>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-multiple-choice',
+    properties: {
+        selectmultiple: {
+            type: Boolean,
+            value: true
+        },
+        randomizeorder: {
+            type: Boolean,
+            value: true
+        },
+        choices: {
+            type: Array,
+            value: []
+        }
+    },
+    _computeChoices: function() {
+        var choices = this.choices;
+        var randomizeOrder = this.randomizeorder;
+
+        if (randomizeOrder) {
+            return this._shuffle(choices);
+        } else {
+            return choices;
+        }
+    },
+    _shuffle: function(originalArray) {
+        var array = originalArray.slice();
+        var counter = array.length;
+
+        // While there are elements in the array
+        while (counter > 0) {
+            // Pick a random index
+            var index = Math.floor(Math.random() * counter);
+
+            // Decrease counter by 1
+            counter--;
+
+            // And swap the last element with it
+            var temp = array[counter];
+            array[counter] = array[index];
+            array[index] = temp;
+        }
+        return array;
+    },
+    _computeType: function(selectmultiple) {
+        return selectmultiple ? "checkbox" : "radio";
+    }
+});
+</script>
+</dom-module>

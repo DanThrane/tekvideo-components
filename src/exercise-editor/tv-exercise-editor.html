@@ -5,7 +5,10 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
 
@@ -13,6 +16,8 @@
 <link rel="import" href="tv-exercise-markdown-editor.html">
 <link rel="import" href="tv-exercise-equation.html">
 <link rel="import" href="tv-exercise-equation-editor.html">
+<link rel="import" href="tv-exercise-multiple-choice.html">
+<link rel="import" href="tv-exercise-multiple-choice-editor.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -43,12 +48,31 @@
 <div class="layout horizontal">
     <div class="layout vertical sidebar">
         <paper-input value="{{name}}" label="Opgave navn"></paper-input>
+        <paper-toggle-button checked="{{jsonMode}}">JSON Mode</paper-toggle-button>
         <div id="editors">
         </div>
     </div>
     <div class="flex">
-        <div id="preview">
-        </div>
+        
+        <iron-pages selected="{{_computeView(jsonMode)}}">
+            <div id="preview">
+            </div>
+            <div id="json">
+                <paper-textarea 
+                    id="jsonField"
+                    label="JSON" 
+                    value="{{_computeJSON(widgets.*)}}">
+
+                </paper-textarea>
+                <!-- 
+                TODO Create a new field which can set the widgets. We can't 
+                just listen on change, since this is complicated. Ideally it 
+                should use a button to make sure we don't parse a lot of stuff. 
+                Will most likely cause browser crashes otherwise
+                -->
+                <template is="dom-repeat" items="[[widgets]]">{{item}}</template>
+            </div>
+        </iron-pages>
     </div>
 </div>
 
@@ -82,7 +106,8 @@ Polymer({
         },
         widgets: {
             type: Array,
-            value: []
+            value: [],
+            notify: true
         },
         _configuration: {
             type: Object,
@@ -104,11 +129,18 @@ Polymer({
             ["content"]
         );
 
+        this._registerWidgetType(
+            "Multiple choice",
+            "tv-exercise-multiple-choice",
+            "tv-exercise-multiple-choice-editor",
+            ["selectmultiple", "choices", "randomizeorder"]
+        )
+
         this.$.widgetDropdown.selected = 0;
     },
     addWidget: function(widget) {
         var self = this;
-        this.widgets.push(widget);
+        this.push("widgets", widget);
 
         var widgetConfig = this._configuration[widget.type];
         if (widgetConfig) {
@@ -125,11 +157,8 @@ Polymer({
             this.$.preview.appendChild(component);
 
             for (var i = 0; i < widgetConfig.properties.length; i++) {
-                var property = widgetConfig.properties[i];
-                editor.addEventListener(property + "-changed", function(ev) {
-                    component[property] = editor[property];
-                    widget.properties[property] = editor[property];
-                });
+                self._setupPropertyListener(i, editor, widget, wrapper, 
+                    widgetConfig, component);
             }
 
             for (var property in widget.properties) {
@@ -141,9 +170,25 @@ Polymer({
                 var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
                 self.$.editors.removeChild(wrapper);
                 self.$.preview.removeChild(component);
-                self.widgets.splice(index, 1);
+                self.splice("widgets", index, 1);
             })
         }
+    },
+    _setupPropertyListener: function(i, editor, widget, wrapper, widgetConfig, 
+                                     component) {
+        var self = this;
+        var property = widgetConfig.properties[i];
+        editor.addEventListener(property + "-changed", function(ev) {
+            component[property] = editor[property];
+            widget.properties[property] = editor[property];
+
+            console.log("Changing " + property + " with new value " + editor[property]);
+
+            var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
+
+            self.push("widgets", {});
+            self.splice("widgets", self.widgets.length - 1, 1)
+        });
     },
     _registerWidgetType: function(name, component, editor, properties) {
         this._configuration[name] = {
@@ -161,6 +206,12 @@ Polymer({
             "type": this.$.widgetDropdown.selectedItem.textContent,
             "properties": { }
         });
+    },
+    _computeView: function(jsonMode) {
+        return jsonMode ? 1 : 0;
+    },
+    _computeJSON: function(widgetsSplices) {
+        return JSON.stringify(this.widgets);
     }
 });
 </script>

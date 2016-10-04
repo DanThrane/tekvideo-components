@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="tv-exercise-multiple-choice-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<ul>
+    <template is="dom-repeat" items="[[choices]]">
+        <li>{{item.title}}</li>
+    </template>
+</ul>
+
+<div class="layout horizontal">
+    <paper-input value="{{itemToAddValue}}" class="flex"></paper-input>
+    <paper-button on-click="_addItem">+</paper-button>
+</div>
+<div class="layout vertical">
+<paper-checkbox checked="{{randomizeorder}}">Randomiser rækkefølge</paper-checkbox>
+<paper-checkbox checked="{{selectmultiple}}">Vælg alle</paper-checkbox>
+</div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tv-exercise-multiple-choice-editor',
+    properties: {
+        selectmultiple: {
+        	type: Boolean,
+        	value: false,
+        	notify: true
+        },
+        randomizeorder: {
+            type: Boolean,
+            value: true,
+            notify: true
+        },
+        choices: {
+            type: Array,
+            value: [],
+            notify: true
+        }
+    },
+    _addItem: function() {
+        var copy = this.choices.slice();
+        copy.push({ title: this.itemToAddValue });
+        this.choices = copy;
+        this.itemToAddValue = "";
+    }
+});
+</script>
+</dom-module>
