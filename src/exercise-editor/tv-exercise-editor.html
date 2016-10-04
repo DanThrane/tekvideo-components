@@ -2,12 +2,17 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
 
 <link rel="import" href="tv-exercise-markdown.html">
 <link rel="import" href="tv-exercise-markdown-editor.html">
+<link rel="import" href="tv-exercise-equation.html">
+<link rel="import" href="tv-exercise-equation-editor.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -21,10 +26,12 @@
     height: 100%;
 }
 
-paper-fab {
+#addWidgetSection {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 0px;
+    right: 0px;
+    padding: 20px;
+    background-color: #eee;
 }
 
 .sidebar {
@@ -36,7 +43,6 @@ paper-fab {
 <div class="layout horizontal">
     <div class="layout vertical sidebar">
         <paper-input value="{{name}}" label="Opgave navn"></paper-input>
-
         <div id="editors">
         </div>
     </div>
@@ -46,7 +52,23 @@ paper-fab {
     </div>
 </div>
 
-<paper-fab id="addWidget" icon="add" title="Tilføj widget" on-click="_addWidget"></paper-fab>
+<div id="addWidgetSection" class="layout horizontal">
+    <div class="layout vertical" style="margin-right: 20px">
+        <paper-dropdown-menu label="Tilføj" always-float-label>
+            <paper-listbox class="dropdown-content" id="widgetDropdown">
+            </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu label="Til" always-float-label>
+            <paper-listbox class="dropdown-content" selected="0">
+                <paper-item>Dokument</paper-item>
+            </paper-listbox>
+        </paper-dropdown-menu>
+    </div>
+    <div class="layout vertical">
+        <div class="flex"></div>
+        <paper-fab id="addWidget" icon="add" title="Tilføj widget" on-click="_addWidget"></paper-fab>
+    </div>
+</div>
 
 </template>
 
@@ -69,18 +91,20 @@ Polymer({
     },
     attached: function() {
         this._registerWidgetType(
-            "markdown", 
+            "Tekst", 
             "tv-exercise-markdown", 
             "tv-exercise-markdown-editor",
             ["content"]
         );
+        
+        this._registerWidgetType(
+            "Ligning", 
+            "tv-exercise-equation", 
+            "tv-exercise-equation-editor",
+            ["content"]
+        );
 
-        this.addWidget({
-            "type": "markdown",
-            "properties": {
-                "content": "# Hello\nThis is __something__"
-            }
-        });
+        this.$.widgetDropdown.selected = 0;
     },
     addWidget: function(widget) {
         var self = this;
@@ -128,13 +152,14 @@ Polymer({
             editor: editor,
             properties: properties
         };
+        var item = document.createElement("paper-item");
+        item.textContent = name;
+        this.$.widgetDropdown.appendChild(item);
     },
     _addWidget: function() {
         this.addWidget({
-            "type": "markdown",
-            "properties": {
-                "content": "# Hello\nThis is __something__"
-            }
+            "type": this.$.widgetDropdown.selectedItem.textContent,
+            "properties": { }
         });
     }
 });
