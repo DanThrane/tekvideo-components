@@ -361,7 +361,7 @@ Polymer({
     expand: function() {
         this.$.dialog.open();
     },
-    attached: function() {
+    ready: function() {
         var markdownElement = this.$.editor;
         var self = this;
 

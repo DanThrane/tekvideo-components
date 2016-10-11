@@ -22,6 +22,8 @@
 <link rel="import" href="tve-explanation.html">
 <link rel="import" href="tve-input-expression.html">
 <link rel="import" href="tve-input-expression-editor.html">
+<link rel="import" href="tve-matrix.html">
+<link rel="import" href="tve-matrix-editor.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -149,7 +151,14 @@ Polymer({
             ["selectmultiple", "choices", "randomizeorder"]
         );
 
-        this.addWidget({"type":"Tekst","properties":{"content": "Hej!"}});
+        this._registerWidgetType(
+            "Matrix",
+            "tve-matrix",
+            "tve-matrix-editor",
+            ["width", "height"]
+        );
+
+        this.addWidget({"type":"Matrix","properties":{"width": 5, "height": 5}});
 
         this.$.widgetDropdown.selected = 0;
     },
