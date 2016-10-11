@@ -195,6 +195,10 @@ Polymer({
                 if (index !== 0) {
                     wrapper.parentNode.insertBefore(wrapper, wrapper.previousSibling);
                     componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.previousSibling);
+                    var temp = self.widgets[index];
+                    self.widgets[index] = self.widgets[index - 1];
+                    self.widgets[index - 1] = temp;
+                    self.widgets = self.widgets.slice();
                 }
             });
 
@@ -204,6 +208,11 @@ Polymer({
                 if (wrapper.nextSibling !== null) {
                     wrapper.parentNode.insertBefore(wrapper, wrapper.nextSibling.nextSibling);
                     componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.nextSibling.nextSibling);
+
+                    var temp = self.widgets[index];
+                    self.widgets[index] = self.widgets[index + 1];
+                    self.widgets[index + 1] = temp;
+                    self.widgets = self.widgets.slice();
                 }
             });
         }
