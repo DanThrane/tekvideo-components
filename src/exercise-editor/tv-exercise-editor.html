@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -19,6 +20,8 @@
 <link rel="import" href="tv-exercise-multiple-choice.html">
 <link rel="import" href="tv-exercise-multiple-choice-editor.html">
 <link rel="import" href="tve-explanation.html">
+<link rel="import" href="tve-input-expression.html">
+<link rel="import" href="tve-input-expression-editor.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -32,17 +35,19 @@
     height: 100%;
 }
 
-#addWidgetSection {
-    position: fixed;
-    bottom: 0px;
-    right: 0px;
-    padding: 20px;
-    background-color: #eee;
-}
-
 .sidebar {
     margin: 15px;
-    min-width: 300px;
+    width: 300px;
+}
+
+tv-exercise-editor-wrapper {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+paper-card {
+    margin: 16px;
+    padding: 16px;
 }
 </style>
 
@@ -54,9 +59,8 @@
         </div>
     </div>
     <div class="flex">
-        
         <iron-pages selected="{{_computeView(jsonMode)}}">
-            <div id="preview">
+            <div id="preview" class="layout vertical">
             </div>
             <div id="json">
                 <paper-textarea 
@@ -75,25 +79,19 @@
             </div>
         </iron-pages>
     </div>
-</div>
 
-<div id="addWidgetSection" class="layout horizontal">
-    <div class="layout vertical" style="margin-right: 20px">
-        <paper-dropdown-menu label="Tilføj" always-float-label>
+    <div id="addWidgetSection" class="layout vertical sidebar">
+        <paper-dropdown-menu label="Widget" always-float-label>
             <paper-listbox class="dropdown-content" id="widgetDropdown">
             </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu label="Til" always-float-label>
-            <paper-listbox class="dropdown-content" selected="0">
-                <paper-item>Dokument</paper-item>
-            </paper-listbox>
-        </paper-dropdown-menu>
-    </div>
-    <div class="layout vertical">
-        <div class="flex"></div>
-        <paper-fab id="addWidget" icon="add" title="Tilføj widget" on-click="_addWidget"></paper-fab>
+        <paper-button id="addWidget" on-click="_addWidget">
+            <iron-icon icon="add"></iron-icon>
+            Tilføj widget
+        </paper-button>
     </div>
 </div>
+
 
 </template>
 
@@ -138,13 +136,20 @@ Polymer({
         );
 
         this._registerWidgetType(
+            "Spørgsmål (Matematisk udtryk)", 
+            "tve-input-expression", 
+            "tve-input-expression-editor",
+            ["question", "expression"]
+        );
+
+        this._registerWidgetType(
             "Multiple choice",
             "tv-exercise-multiple-choice",
             "tv-exercise-multiple-choice-editor",
             ["selectmultiple", "choices", "randomizeorder"]
         );
 
-        this.addWidget({"type":"Multiple choice","properties":{"choices":[{"title":"1"},{"title":"2"},{"title":"3"}]}});
+        this.addWidget({"type":"Tekst","properties":{"content": "Hej!"}});
 
         this.$.widgetDropdown.selected = 0;
     },
@@ -162,9 +167,11 @@ Polymer({
             wrapper.name = widget.type + "-" + this.widgets.length;
             this.$.editors.appendChild(wrapper);
 
+            var componentWrapper = document.createElement("paper-card");
             var component = document.createElement(widgetConfig.component);
             component.id = "component-" + this.widgets.length;
-            this.$.preview.appendChild(component);
+            componentWrapper.appendChild(component);
+            this.$.preview.appendChild(componentWrapper);
 
             for (var i = 0; i < widgetConfig.properties.length; i++) {
                 self._setupPropertyListener(i, editor, widget, wrapper, 
@@ -179,7 +186,7 @@ Polymer({
             wrapper.addEventListener("delete", function() {
                 var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
                 self.$.editors.removeChild(wrapper);
-                self.$.preview.removeChild(component);
+                self.$.preview.removeChild(componentWrapper);
                 self.splice("widgets", index, 1);
             })
         }
