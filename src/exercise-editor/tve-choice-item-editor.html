@@ -1,0 +1,44 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<dom-module id="tve-choice-item-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<paper-input value="{{title}}">
+    <paper-checkbox value="{{correct}}" prefix>
+    </paper-checkbox>
+    <paper-icon-button icon="delete" on-click="delete" suffix>
+    </paper-icon-button>
+</paper-input>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-choice-item-editor',
+    properties: {
+        title: {
+            type: String,
+            value: "",
+            notify: true
+        },
+        correct: {
+            type: Boolean,
+            value: false,
+            notify: true
+        }
+    }
+});
+</script>
+</dom-module>

@@ -3,6 +3,12 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+
+
+<link rel="import" href="tve-choice-item-editor.html">
 
 <dom-module id="tv-exercise-multiple-choice-editor">
 
@@ -15,15 +21,26 @@
 }
 </style>
 
-<ul>
-    <template is="dom-repeat" items="[[choices]]">
-        <li>{{item.title}}</li>
-    </template>
-</ul>
+<template is="dom-repeat" items="{{choices}}">
+    <paper-input value="{{item.title}}" on-input="_notify">
+        <paper-checkbox 
+            checked="{{item.correct}}" 
+            on-click="_notify" 
+            prefix>
+            <paper-tooltip>Korrekt?</paper-tooltip>
+        </paper-checkbox>
+        <paper-icon-button 
+            data-index$="{{index}}"
+            icon="delete" 
+            on-click="delete" 
+            suffix>
+        </paper-icon-button>
+    </paper-input>
+    
+</template>
 
 <div class="layout horizontal">
-    <paper-input value="{{itemToAddValue}}" class="flex"></paper-input>
-    <paper-button on-click="_addItem">+</paper-button>
+    <paper-button on-click="_addItem" class="flex">Nyt element</paper-button>
 </div>
 <div class="layout vertical">
 <paper-checkbox checked="{{randomizeorder}}">Randomiser rækkefølge</paper-checkbox>
@@ -43,7 +60,7 @@ Polymer({
         },
         randomizeorder: {
             type: Boolean,
-            value: true,
+            value: false,
             notify: true
         },
         choices: {
@@ -52,11 +69,22 @@ Polymer({
             notify: true
         }
     },
+    _notify: function() {
+        var copy = this.choices.slice();
+        console.log(this.cohices);
+        this.choices = copy;
+    },
     _addItem: function() {
         var copy = this.choices.slice();
-        copy.push({ title: this.itemToAddValue });
+        copy.push({ title: this.itemToAddValue, correct: false });
+        console.log(copy);
         this.choices = copy;
         this.itemToAddValue = "";
+    },
+    delete: function(e) {
+        var index = e.target.getAttribute("data-index");
+        this.choices.splice(index, 1);
+        this.choices = this.choices.slice();
     }
 });
 </script>

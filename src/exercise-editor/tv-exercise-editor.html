@@ -136,6 +136,8 @@ Polymer({
             ["selectmultiple", "choices", "randomizeorder"]
         )
 
+        this.addWidget({"type":"Multiple choice","properties":{"choices":[{"title":"1"},{"title":"2"},{"title":"3"}]}});
+
         this.$.widgetDropdown.selected = 0;
     },
     addWidget: function(widget) {
@@ -178,11 +180,15 @@ Polymer({
                                      component) {
         var self = this;
         var property = widgetConfig.properties[i];
+        window.editors = window.editors || [];
+        window.editors.push(editor);
         editor.addEventListener(property + "-changed", function(ev) {
-            component[property] = editor[property];
+            //component[property] = editor[property];
+            component.set(property, []);
+            component.set(property, editor[property]);
             widget.properties[property] = editor[property];
 
-            console.log("Changing " + property + " with new value " + editor[property]);
+            console.log("Changing " + property + " with new value ", editor[property]);
 
             var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
 
