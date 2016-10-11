@@ -188,7 +188,24 @@ Polymer({
                 self.$.editors.removeChild(wrapper);
                 self.$.preview.removeChild(componentWrapper);
                 self.splice("widgets", index, 1);
-            })
+            });
+
+            wrapper.addEventListener("moveUp", function() {
+                var index = Array.prototype.slice.call(self.$.editors.children).indexOf(wrapper);
+                if (index !== 0) {
+                    wrapper.parentNode.insertBefore(wrapper, wrapper.previousSibling);
+                    componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.previousSibling);
+                }
+            });
+
+            wrapper.addEventListener("moveDown", function() {
+                var domNodes = Array.prototype.slice.call(self.$.editors.children);
+                var index = domNodes.indexOf(wrapper);
+                if (wrapper.nextSibling !== null) {
+                    wrapper.parentNode.insertBefore(wrapper, wrapper.nextSibling.nextSibling);
+                    componentWrapper.parentNode.insertBefore(componentWrapper, componentWrapper.nextSibling.nextSibling);
+                }
+            });
         }
     },
     _setupPropertyListener: function(i, editor, widget, wrapper, widgetConfig, 
