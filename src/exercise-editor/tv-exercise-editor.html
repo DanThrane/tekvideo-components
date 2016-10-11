@@ -18,6 +18,7 @@
 <link rel="import" href="tv-exercise-equation-editor.html">
 <link rel="import" href="tv-exercise-multiple-choice.html">
 <link rel="import" href="tv-exercise-multiple-choice-editor.html">
+<link rel="import" href="tve-explanation.html">
 
 <dom-module id="tv-exercise-editor">
 
@@ -130,11 +131,18 @@ Polymer({
         );
 
         this._registerWidgetType(
+            "Forklaring", 
+            "tve-explanation", 
+            "tv-exercise-markdown-editor",
+            ["content"]
+        );
+
+        this._registerWidgetType(
             "Multiple choice",
             "tv-exercise-multiple-choice",
             "tv-exercise-multiple-choice-editor",
             ["selectmultiple", "choices", "randomizeorder"]
-        )
+        );
 
         this.addWidget({"type":"Multiple choice","properties":{"choices":[{"title":"1"},{"title":"2"},{"title":"3"}]}});
 
@@ -183,8 +191,6 @@ Polymer({
         window.editors = window.editors || [];
         window.editors.push(editor);
         editor.addEventListener(property + "-changed", function(ev) {
-            //component[property] = editor[property];
-            component.set(property, []);
             component.set(property, editor[property]);
             widget.properties[property] = editor[property];
 
