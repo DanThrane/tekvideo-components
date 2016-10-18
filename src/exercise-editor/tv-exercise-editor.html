@@ -67,17 +67,15 @@ paper-card {
             <div id="json">
                 <paper-textarea 
                     id="jsonField"
-                    label="JSON" 
+                    label="Eksporter JSON" 
                     value="{{_computeJSON(widgets.*)}}">
-
                 </paper-textarea>
-                <!-- 
-                TODO Create a new field which can set the widgets. We can't 
-                just listen on change, since this is complicated. Ideally it 
-                should use a button to make sure we don't parse a lot of stuff. 
-                Will most likely cause browser crashes otherwise
-                -->
-                <template is="dom-repeat" items="[[widgets]]">{{item}}</template>
+
+                <paper-textarea
+                    id="inputJsonField"
+                    label="Importer JSON">
+                </paper-textarea>
+                <paper-button on-click="_sync">Importer</paper-button>
             </div>
         </iron-pages>
     </div>
@@ -266,6 +264,15 @@ Polymer({
     },
     _computeJSON: function(widgetsSplices) {
         return JSON.stringify(this.widgets);
+    },
+    _sync: function() {
+        var value = JSON.parse(this.$.inputJsonField.value);
+        this.widgets = [];
+        this.$.editors.innerHTML = "";
+        this.$.preview.innerHTML = "";
+        for (var i = 0; i < value.length; i++) {
+            this.addWidget(value[i]);
+        }
     }
 });
 </script>
