@@ -1,0 +1,142 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="marked-import.html">
+
+<link rel="import" href="tv-exercise-markdown.html">
+<link rel="import" href="tv-exercise-equation.html">
+<link rel="import" href="tv-exercise-multiple-choice.html">
+<link rel="import" href="tve-explanation.html">
+<link rel="import" href="tve-input-expression.html">
+<link rel="import" href="tve-matrix.html">
+<link rel="import" href="tve-widget-config.html">
+
+<dom-module id="tve-prototype">
+
+<template>
+<style>
+:host {
+    display: block;
+}
+</style>
+
+<div id="documentInsertion"></div>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-prototype',
+    observers: ["_observeDocument(content, widgets)"],
+    properties: {
+        content: {
+            type: String,
+        },
+        widgets: {
+            type: Object,
+            value: {}
+        }
+    },
+    _observeDocument: function(content) {
+        var documentInsertion = this.$.documentInsertion;
+        var result = marked(content);
+
+        var SEARCHING = 0,
+            HAS_OPEN_BRACKET_1 = 1,
+            HAS_OPEN_BRACKET_2 = 2,
+            HAS_CLOSING_BRACKET_1 = 3,
+            HAS_TYPE = 5;
+
+        var state = 0;
+        var start = -1;
+        var type = "";
+        var body = "";
+        var output = [];
+        for (var i = 0; i < result.length; i++) {
+            var token = result[i];
+            switch (state) {
+                // TODO Handle something other than the "happy path"
+                case SEARCHING:
+                    if (token === "[") {
+                        state = HAS_OPEN_BRACKET_1;
+                        start = i;
+                    }
+                    break;
+                case HAS_OPEN_BRACKET_1:
+                    if (token === "[") {
+                        state = HAS_OPEN_BRACKET_2;
+                    } else {
+                        type = "";
+                        body = "";
+                        start = -1;
+                        state = SEARCHING;
+                    }
+                    break;
+                case HAS_OPEN_BRACKET_2:
+                    if (token === " ") state = HAS_TYPE;
+                    else type += token;
+                    break;
+                case HAS_TYPE:
+                    if (token === "]") state = HAS_CLOSING_BRACKET_1;
+                    else body += token;
+                    break;
+                case HAS_CLOSING_BRACKET_1:
+                    if (token === "]") {
+                        var replacement = "<span id='insertion-" + output.length + "'></span>";
+                        var before = result.substring(0, start);
+                        var after = result.substring(i + 1, result.length);
+                        var tokenLength = i - start;
+                        i = replacement.length - tokenLength + i;
+                        result = before + replacement + after;
+                        output.push({
+                            type: type,
+                            body: body
+                        });
+                    } else {
+                        i--; // We need to re-examine this token
+                    }
+                    type = "";
+                    body = "";
+                    start = -1;
+                    state = SEARCHING;
+                    break;
+            }
+        }
+        console.log(result);
+        console.table(output);
+        documentInsertion.innerHTML = result;
+        for (var i = 0; i < output.length; i++) {
+            var insertionPoint = documentInsertion.querySelector("#insertion-" + i);
+            
+            this._insertWidget(insertionPoint, output[i].type, output[i].body);
+        }
+    },
+    _insertWidget: function(insertionPoint, type, body) {
+        if (type === "ref") {
+            var widgetInfo = this.widgets[body];
+            if (!widgetInfo) return;
+            
+            var widgetConfig = TekVideo.WidgetConfiguration[widgetInfo.type];
+            if (!widgetConfig) return;
+            
+            var widget = this._createWidget(widgetConfig.component, widgetInfo.properties);
+            insertionPoint.parentNode.replaceChild(widget, insertionPoint);
+        } else {
+            var widgetConfig = TekVideo.WidgetConfiguration[type];
+            if (!widgetConfig) return;
+
+            var widget = this._createWidget(widgetConfig.component, { content: body });
+            insertionPoint.parentNode.replaceChild(widget, insertionPoint);
+        }
+    },
+    _createWidget: function(type, properties) {
+        var component = document.createElement(type);
+
+        for (var property in properties) {
+            var value = properties[property];
+            component[property] = value;
+        }
+        return component;
+    }
+});
+</script>
+</dom-module>

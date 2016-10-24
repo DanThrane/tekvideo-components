@@ -1,0 +1,64 @@
+<script>
+    "use strict";
+
+    var TekVideo = TekVideo || {};
+    TekVideo.WidgetConfiguration = {};
+    (function() {
+        function registerWidgetType(name, shortName, component, editor, properties) {
+            TekVideo.WidgetConfiguration[shortName] = {
+                name: name,
+                shortName: shortName,
+                component: component,
+                editor: editor,
+                properties: properties
+            };
+        }
+        registerWidgetType(
+            "Tekst", 
+            "txt",
+            "tv-exercise-markdown", 
+            "tv-exercise-markdown-editor",
+            ["content"]
+        );
+
+        registerWidgetType(
+            "Ligning", 
+            "eq",
+            "tv-exercise-equation", 
+            "tv-exercise-equation-editor",
+            ["content"]
+        );
+
+        registerWidgetType(
+            "Forklaring", 
+            "hint",
+            "tve-explanation", 
+            "tv-exercise-markdown-editor",
+            ["content"]
+        );
+
+        registerWidgetType(
+            "Spørgsmål (Matematisk udtryk)", 
+            "equation-input",
+            "tve-input-expression", 
+            "tve-input-expression-editor",
+            ["question", "expression"]
+        );
+
+        registerWidgetType(
+            "Multiple choice",
+            "multiple-choice",
+            "tv-exercise-multiple-choice",
+            "tv-exercise-multiple-choice-editor",
+            ["selectmultiple", "choices", "randomizeorder"]
+        );
+
+        registerWidgetType(
+            "Matrix",
+            "matrix",
+            "tve-matrix",
+            "tve-matrix-editor",
+            ["width", "height"]
+        );
+    })();
+</script>
