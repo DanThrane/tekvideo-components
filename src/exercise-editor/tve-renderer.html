@@ -2,15 +2,9 @@
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
 <link rel="import" href="marked-import.html">
 
-<link rel="import" href="tv-exercise-markdown.html">
-<link rel="import" href="tv-exercise-equation.html">
-<link rel="import" href="tv-exercise-multiple-choice.html">
-<link rel="import" href="tve-explanation.html">
-<link rel="import" href="tve-input-expression.html">
-<link rel="import" href="tve-matrix.html">
 <link rel="import" href="tve-widget-config.html">
 
-<dom-module id="tve-prototype">
+<dom-module id="tve-renderer">
 
 <template>
 <style>
@@ -25,7 +19,7 @@
 
 <script>
 Polymer({
-    is: 'tve-prototype',
+    is: 'tve-renderer',
     observers: ["_observeDocument(content, widgets)"],
     properties: {
         content: {
