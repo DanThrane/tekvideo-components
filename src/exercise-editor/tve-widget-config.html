@@ -1,9 +1,9 @@
-<link rel="import" href="tv-exercise-markdown.html">
 <link rel="import" href="tv-exercise-equation.html">
 <link rel="import" href="tv-exercise-multiple-choice.html">
 <link rel="import" href="tve-explanation.html">
 <link rel="import" href="tve-input-expression.html">
 <link rel="import" href="tve-matrix.html">
+<link rel="import" href="tve-inline-equation.html">
 
 <script>
     "use strict";
@@ -21,17 +21,17 @@
             };
         }
         registerWidgetType(
-            "Tekst", 
-            "txt",
-            "tv-exercise-markdown", 
-            "tv-exercise-markdown-editor",
+            "Ligning", 
+            "eq",
+            "tv-exercise-equation", 
+            "tv-exercise-equation-editor",
             ["content"]
         );
 
         registerWidgetType(
-            "Ligning", 
-            "eq",
-            "tv-exercise-equation", 
+            "Inline ligning", 
+            "eql",
+            "tve-inline-equation", 
             "tv-exercise-equation-editor",
             ["content"]
         );
