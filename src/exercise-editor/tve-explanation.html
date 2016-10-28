@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="tve-renderer.html">
 
 <dom-module id="tve-explanation">
 
@@ -17,7 +18,7 @@
 <paper-button on-click="showExplanation">Toggle forklaring</paper-button>
 
 <iron-collapse id="collapse">
-    <marked-element markdown="{{content}}"></marked-element>
+    <tve-renderer content="{{content}}"></tve-renderer>
 </iron-collapse>
 
 </template>

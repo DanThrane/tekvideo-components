@@ -12,11 +12,14 @@
 
 <style>
 :host {
-    display: block;
+    display: inline;
+}
+
+tekvideo-math-field {
+    --tekvideo-math-field-min-width: 100px;
 }
 </style>
 
-<marked-element markdown="{{question}}"></marked-element>
 <tekvideo-math-field id="mathInput"></tekvideo-math-field>
 <button on-click="grade">Grade</button>
 
@@ -26,17 +29,13 @@
 Polymer({
     is: 'tve-input-expression',
     properties: {
-        question: {
-            type: String,
-            value: ""
-        },
-        expression: {
+        content: {
             type: String,
             value: ""
         }
     },
     grade: function() {
-        var expectedValue = KAS.parse(this.expression);
+        var expectedValue = KAS.parse(this.content);
         var givenAnswer = KAS.parse(this.$.mathInput.value);
         var result = KAS.compare(expectedValue.expr, givenAnswer.expr);
         console.log(result);

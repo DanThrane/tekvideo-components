@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
 <dom-module id="tve-matrix-editor">
 
 <template>
@@ -12,6 +14,8 @@
 }
 </style>
 
+<paper-input value="{{height}}" label="Rækker"></paper-input>
+<paper-input value="{{width}}" label="Kolonner"></paper-input>
 
 </template>
 
@@ -21,12 +25,12 @@ Polymer({
     properties: {
         height: {
             type: Number,
-            value: 1,
+            value: 3,
             notify: true
         },
         width: {
             type: Number,
-            value: 1,
+            value: 3,
             notify: true
         }
     }

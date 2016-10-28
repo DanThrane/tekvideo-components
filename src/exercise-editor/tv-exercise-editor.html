@@ -13,11 +13,13 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
 <link rel="import" href="tv-exercise-equation-editor.html">
 <link rel="import" href="tv-exercise-multiple-choice-editor.html">
 <link rel="import" href="tve-input-expression-editor.html">
 <link rel="import" href="tve-matrix-editor.html">
+<link rel="import" href="tve-markdown-editor.html">
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
 <link rel="import" href="tve-renderer.html">
@@ -60,10 +62,13 @@ paper-tabs {
 }
 </style>
 
+<iron-a11y-keys id="a11y" keys="alt+e alt+f alt+j alt+r alt+insert" on-keys-pressed="onShortcut">
+</iron-a11y-keys>
+
 <paper-tabs selected="{{selectedPage}}" scrollable fit-container>
-  <paper-tab>Editor</paper-tab>
-  <paper-tab>Forhåndsvisning</paper-tab>
-  <paper-tab>JSON</paper-tab>
+  <paper-tab>Editor [E]</paper-tab>
+  <paper-tab>Forhåndsvisning [F]</paper-tab>
+  <paper-tab>JSON [J]</paper-tab>
 </paper-tabs>
 
 <iron-pages selected="{{selectedPage}}">
@@ -77,10 +82,10 @@ paper-tabs {
             </paper-dropdown-menu>
             <paper-button id="addWidget" on-click="_addWidget">
                 <iron-icon icon="add"></iron-icon>
-                Tilføj
+                Tilføj [INS]
             </paper-button>
         </div>
-
+        <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
         <paper-textarea value="{{documentContent}}" label="Dokument" rows="20"></paper-textarea>
         
         <div id="editors" class="layout vertical">
@@ -143,16 +148,52 @@ Polymer({
         }
     },
     observers: ["_observeSelectedPage(selectedPage)"],
+    ready: function() {
+        this.$.a11y.target = document.querySelector("body");
+    },
     attached: function() {
         for (name in TekVideo.WidgetConfiguration) {
             var config = TekVideo.WidgetConfiguration[name];
 
             var item = document.createElement("paper-item");
             item.textContent = config.name;
+            if (config.properties.length === 1 && 
+                    config.properties[0] === "content") {
+                item.textContent += " [" + config.shortName + "]";
+            }
             item.dataset.shortName = config.shortName;
             this.$.widgetDropdown.appendChild(item);
         }
         this.$.widgetDropdown.selected = 0;
+    },
+    onShortcut: function(e) {
+        var preventDefault = true;
+        switch (e.detail.combo) {
+            case "alt+e":
+                this.selectedPage = PAGE_EDITOR;
+                break;
+            case "alt+f":
+                this.selectedPage = PAGE_PREVIEW;
+                break;
+            case "alt+j":
+                this.selectedPage = PAGE_JSON;
+                break;
+            case "alt+r":
+                console.log(this.$.widgetDropdown);
+                this.$.widgetDropdown.expand();
+                break;
+            case "alt+insert":
+                this._addWidget();
+                break;
+            default:
+                preventDefault = false;
+                break;
+        }
+        if (preventDefault) {
+            console.log(e);
+            e.detail.keyboardEvent.preventDefault();
+            return false;
+        }
     },
     addWidget: function(widget) {
         var self = this;
@@ -196,7 +237,7 @@ Polymer({
         var self = this;
         var property = widgetConfig.properties[i];
         editor.addEventListener(property + "-changed", function(ev) {
-            widget.properties[property] = editor[property];
+            self.widgets[widget.name].properties[property] = editor[property];
         });
     },
     _addWidget: function() {
@@ -205,7 +246,6 @@ Polymer({
             "type": type,
             "properties": { }
         });
-        this.documentContent += "[[ref ny-" + type + "]] "
     },
     _computeJSON: function(widgetsSplices) {
         return JSON.stringify({

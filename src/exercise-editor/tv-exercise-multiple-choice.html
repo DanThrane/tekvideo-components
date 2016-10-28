@@ -7,6 +7,7 @@
 
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="tve-renderer.html">
 
 <dom-module id="tv-exercise-multiple-choice">
 
@@ -27,7 +28,7 @@ li {
 
 <paper-listbox id="box">
     <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
-        <paper-item data-index$="{{index}}">{{item.title}}</paper-item>
+        <paper-item data-index$="{{index}}"><tve-renderer content="{{item.title}}"><</paper-item>
     </template>
 </paper-listbox>
 

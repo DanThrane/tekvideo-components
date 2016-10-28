@@ -46,7 +46,13 @@ Polymer({
         }
     },
     _generateRange: function(value) {
-        return Array.apply(null, Array(value)).map(function (_, i) {return i;});
+        console.log(this.height, this.width);
+        console.log(value);
+        var res = [];
+        for (var i = 0; i < value; i++) {
+            res.push(i);
+        }
+        return res;
     },
     printMatrix: function() {
         var self = this;
