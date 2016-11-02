@@ -23,6 +23,7 @@
 
 <link rel="import" href="tv-exercise-editor-wrapper.html">
 <link rel="import" href="tve-renderer.html">
+<link rel="import" href="tve-template-selector.html">
 
 <link rel="import" href="tve-widget-config.html">
 
@@ -86,6 +87,9 @@ paper-tabs {
             </paper-button>
         </div>
         <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
+        
+        <tve-template-selector id="templateSelector"></tve-template-selector>
+        
         <paper-textarea value="{{documentContent}}" label="Dokument" rows="20"></paper-textarea>
         
         <div id="editors" class="layout vertical">
@@ -149,7 +153,13 @@ Polymer({
     },
     observers: ["_observeSelectedPage(selectedPage)"],
     ready: function() {
+        var self = this;
         this.$.a11y.target = document.querySelector("body");
+        this.$.templateSelector.addEventListener("insert", function(e) {
+            var data = e.detail.object;
+            self.$.inputJsonField.value = JSON.stringify(data, null, 2);
+            self._sync();
+        });
     },
     attached: function() {
         for (name in TekVideo.WidgetConfiguration) {

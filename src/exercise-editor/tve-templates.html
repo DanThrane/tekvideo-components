@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    "use strict";
+
+    var TekVideo = TekVideo || {};
+    TekVideo.Templates = {};
+
+    (function() {
+        function registerTemplate(name, description, object) {
+            TekVideo.Templates[name] = {
+                name: name,
+                description: description,
+                object: object
+            };
+        }
+
+        registerTemplate("Template 1", "This is a test description.", {
+          "name": "Differentier",
+          "document": "Differentier dette udtryk [[eql f(x)=x^2]] med hensyn til [[eql x]].\n\n[[ref ny-equation-input]]\n\n[[ref ny-hint]]\n\n[[ref ny-multiple-choice]]",
+          "widgets": {
+            "ny-hint": {
+              "type": "hint",
+              "properties": {
+                "content": "Benyt formlen $\\frac{d}{dx} x^n = n \\cdot x^{n -1}$"
+              },
+              "name": "ny-hint"
+            },
+            "ny-equation-input": {
+              "type": "equation-input",
+              "properties": {},
+              "name": "ny-equation-input"
+            },
+            "ny-multiple-choice": {
+              "type": "multiple-choice",
+              "properties": {
+                "choices": [
+                  {
+                    "title": "12",
+                    "correct": false
+                  },
+                  {
+                    "title": "32",
+                    "correct": true
+                  }
+                ]
+              },
+              "name": "ny-multiple-choice"
+            }
+          }
+        });
+    })();
+</script>
