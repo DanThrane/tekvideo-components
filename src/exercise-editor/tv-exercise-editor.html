@@ -160,6 +160,8 @@ Polymer({
             self.$.inputJsonField.value = JSON.stringify(data, null, 2);
             self._sync();
         });
+
+        this.$.templateSelector.insertTemplate("Matrix");
     },
     attached: function() {
         for (name in TekVideo.WidgetConfiguration) {
@@ -189,7 +191,6 @@ Polymer({
                 this.selectedPage = PAGE_JSON;
                 break;
             case "alt+r":
-                console.log(this.$.widgetDropdown);
                 this.$.widgetDropdown.expand();
                 break;
             case "alt+insert":
@@ -200,14 +201,12 @@ Polymer({
                 break;
         }
         if (preventDefault) {
-            console.log(e);
             e.detail.keyboardEvent.preventDefault();
             return false;
         }
     },
     addWidget: function(widget) {
         var self = this;
-        console.log("Adding ", widget);
 
         var widgetConfig = TekVideo.WidgetConfiguration[widget.type];
         if (widgetConfig) {
@@ -247,6 +246,7 @@ Polymer({
         var self = this;
         var property = widgetConfig.properties[i];
         editor.addEventListener(property + "-changed", function(ev) {
+            console.log("Setting property: " + property + " to new value: ", editor[property]);
             self.widgets[widget.name].properties[property] = editor[property];
         });
     },

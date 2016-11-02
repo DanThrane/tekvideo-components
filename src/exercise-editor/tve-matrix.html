@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="tve-matrix-renderer.html">
 
 <dom-module id="tve-matrix">
 
@@ -20,15 +21,7 @@ input {
 }
 </style>
 
-<template is="dom-repeat" items="{{_generateRange(height)}}" index-as="row">
-    <div class="row">
-        <template is="dom-repeat" items="{{_generateRange(width)}}" index-as="col">
-            <span><input data-column$="{{col}}" data-row$="{{row}}"></span>
-        </template>
-    </div>
-</template>
-
-<button on-click="printMatrix">Print</button>
+<tve-matrix-renderer height="[[height]]" width="[[width]]"></tve-matrix-renderer>
 
 </template>
 
@@ -43,26 +36,12 @@ Polymer({
         width: {
             type: Number,
             value: 5
+        },
+        answer: {
+            type: Array,
+            value: []
         }
     },
-    _generateRange: function(value) {
-        console.log(this.height, this.width);
-        console.log(value);
-        var res = [];
-        for (var i = 0; i < value; i++) {
-            res.push(i);
-        }
-        return res;
-    },
-    printMatrix: function() {
-        var self = this;
-        for (var i = 0; i < this.height; i++) {
-            for (var j = 0; j < this.width; j++) {
-                var field = self.$$('[data-column*="' + j + '"][data-row*="' + i + '"]');
-                console.log(field.value);
-            }
-        }
-    }
 });
 </script>
 </dom-module>

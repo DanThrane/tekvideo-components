@@ -90,18 +90,15 @@ Polymer({
     },
     _insertTemplate: function(e) {
         var name = e.target.dataset.template;
-        console.log(name);
         // TODO Confirm
         this.insertTemplate(name);
     },
     _computeTemplates: function() {
-        console.log("Doing stuff");
         var templates = TekVideo.Templates;
         var res = [];
         for (var key in templates) {
             res.push(templates[key]);
         }
-        console.log(res);
         return res;
     },
     refreshTemplates: function() {
