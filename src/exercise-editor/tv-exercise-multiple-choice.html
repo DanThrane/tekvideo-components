@@ -22,15 +22,31 @@
 li {
     list-style: none;
 }
+
+.items {
+    @apply(--layout-vertical);
+}
+
+paper-checkbox {
+    margin: 10px;
+}
 </style>
 
-<h3>{{_computeHeader(selectmultiple)}}</h3>
+<template is="dom-if" if="[[selectmultiple]]">
+    <div class="items">
+        <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+            <paper-checkbox>[[item.title]]</paper-checkbox>
+        </template>
+    </div>
+</template>
 
-<paper-listbox id="box">
-    <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
-        <paper-item data-index$="{{index}}"><tve-renderer content="{{item.title}}"><</paper-item>
-    </template>
-</paper-listbox>
+<template is="dom-if" if="[[!selectmultiple]]">
+    <paper-radio-group class="items">
+        <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
+            <paper-radio-button name="{{index}}">[[item.title]]</paper-radio-button>
+        </template>
+    </paper-radio-group>
+</template>
 
 <button on-click="grade">Grade</button>
     
@@ -52,10 +68,6 @@ Polymer({
             type: Array,
             value: []
         }
-    },
-    observers: ["_observeMultiple(selectmultiple)"],
-    _observeMultiple: function(selectmultiple) {
-        this.$.box.multi = selectmultiple;
     },
     _computeChoices: function(choices, randomizeOrder) {
         if (randomizeOrder) {
@@ -83,9 +95,6 @@ Polymer({
         }
         return array;
     },
-    _computeHeader: function(selectMultiple) {
-        return selectMultiple ? "Vælg alle" : "Vælg én";
-    },
     grade: function() {
         var maxPoints = 0;
         var points = 0;
@@ -107,6 +116,9 @@ Polymer({
             points: points,
             maxPoints: maxPoints
         };
+    },
+    _computeType: function(selectmultiple) {
+        return selectmultiple ? "checkbox" : "radio";
     }
 });
 </script>

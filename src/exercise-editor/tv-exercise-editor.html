@@ -63,7 +63,7 @@ paper-tabs {
 }
 </style>
 
-<iron-a11y-keys id="a11y" keys="alt+e alt+f alt+j alt+r alt+insert" on-keys-pressed="onShortcut">
+<iron-a11y-keys id="a11y" keys="alt+e alt+f alt+j alt+r alt+insert crtl+s" on-keys-pressed="onShortcut">
 </iron-a11y-keys>
 
 <paper-tabs selected="{{selectedPage}}" scrollable fit-container>
@@ -149,6 +149,10 @@ Polymer({
         documentContent: {
             type: String,
             value: ""
+        },
+        _counter: {
+            type: Number,
+            value: 0
         }
     },
     observers: ["_observeSelectedPage(selectedPage)"],
@@ -161,7 +165,7 @@ Polymer({
             self._sync();
         });
 
-        this.$.templateSelector.insertTemplate("Matrix");
+        this.$.templateSelector.insertTemplate("Opgaver");
     },
     attached: function() {
         for (name in TekVideo.WidgetConfiguration) {
@@ -196,6 +200,8 @@ Polymer({
             case "alt+insert":
                 this._addWidget();
                 break;
+            case "crtl+s":
+                break;
             default:
                 preventDefault = false;
                 break;
@@ -205,7 +211,7 @@ Polymer({
             return false;
         }
     },
-    addWidget: function(widget) {
+    addWidget: function(widget, name) {
         var self = this;
 
         var widgetConfig = TekVideo.WidgetConfiguration[widget.type];
@@ -214,7 +220,12 @@ Polymer({
 
             var wrapper = document.createElement("tv-exercise-editor-wrapper");
             wrapper.appendChild(editor);
-            wrapper.name = "ny-" + widget.type;
+            if (!name) {
+                wrapper.name = "ny-" + widget.type + self._counter;
+                self._counter++;
+            } else {
+                wrapper.name = name;
+            }
             widget.name = wrapper.name;
             this.widgets[widget.name] = widget;
             this.$.editors.appendChild(wrapper);
@@ -246,7 +257,6 @@ Polymer({
         var self = this;
         var property = widgetConfig.properties[i];
         editor.addEventListener(property + "-changed", function(ev) {
-            console.log("Setting property: " + property + " to new value: ", editor[property]);
             self.widgets[widget.name].properties[property] = editor[property];
         });
     },
@@ -270,7 +280,7 @@ Polymer({
         this.$.editors.innerHTML = "";
         this.documentContent = value.document;
         for (a in value.widgets) {
-            this.addWidget(value.widgets[a]);
+            this.addWidget(value.widgets[a], value.widgets[a].name);
         }
         // TODO Hack
         this._observeSelectedPage(PAGE_JSON);

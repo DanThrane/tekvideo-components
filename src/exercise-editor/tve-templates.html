@@ -47,14 +47,56 @@
             }
           }
         });
-        registerTemplate("Matrix", "Contains a single matrix", {
-          "name": "Matrix",
-          "document": "Her er der en matrix: [[ref ny-matrix]]",
+        registerTemplate("Opgaver", "Indeholder diverse opgave widgets", {
+          "name": "",
+          "document": "Her er der en matrix: [[ref ny-matrix]]\n\nHer er en multiple choice test:\n\n[[ref ny-multiple-choice]]\n\n[[ref ny-multiple-choice0]]",
           "widgets": {
             "ny-matrix": {
               "type": "matrix",
               "properties": {},
               "name": "ny-matrix"
+            },
+            "ny-multiple-choice": {
+              "type": "multiple-choice",
+              "properties": {
+                "randomizeorder": false,
+                "choices": [
+                  {
+                    "title": "1",
+                    "correct": false
+                  },
+                  {
+                    "title": "2",
+                    "correct": true
+                  },
+                  {
+                    "title": "3",
+                    "correct": false
+                  }
+                ]
+              },
+              "name": "ny-multiple-choice"
+            },
+            "ny-multiple-choice0": {
+              "type": "multiple-choice",
+              "properties": {
+                "choices": [
+                  {
+                    "title": "1",
+                    "correct": false
+                  },
+                  {
+                    "title": "2",
+                    "correct": true
+                  },
+                  {
+                    "title": "3",
+                    "correct": false
+                  }
+                ],
+                "selectmultiple": true
+              },
+              "name": "ny-multiple-choice0"
             }
           }
         });
