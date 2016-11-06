@@ -1,20 +1,57 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
 <link rel="import" href="marked-import.html">
 
 <link rel="import" href="tve-widget-config.html">
 
+
 <dom-module id="tve-renderer">
 
 <template>
-<style>
+<style is="custom-style">
+paper-button.custom {
+    --paper-button-ink-color: white;
+    /* These could also be individually defined for each of the
+    specific css classes, but we'll just do it once as an example */
+    --paper-button-flat-keyboard-focus: {
+        background-color: var(--paper-indigo-a200);
+        color: white !important;    
+    };
+    --paper-button-raised-keyboard-focus: {
+        background-color: var(--paper-indigo-a200) !important;
+        color: white !important;
+    };
+}
+
+paper-button.custom:hover {
+    background-color: var(--paper-indigo-400);
+}
+
+paper-button.indigo {
+    background-color: var(--paper-indigo-500);
+    color: white;
+    --paper-button-raised-keyboard-focus: {
+        background-color: var(--paper-indigo-a200) !important;
+        color: white !important;
+    };
+}
+
+paper-button {
+    width: 100%;
+}
+
 :host {
     display: inline;
 }
 </style>
+<style include="iron-flex"></style>
 
 <div id="documentInsertion"></div>
 
+<paper-button hidden$="{{!isInteractive}}" class="custom indigo" raised>Tjek svar</paper-button>
 </template>
 
 <script>
@@ -28,6 +65,10 @@ Polymer({
         widgets: {
             type: Object,
             value: {}
+        },
+        isInteractive: {
+            type: Boolean,
+            value: false
         }
     },
     _observeDocument: function(content) {

@@ -35,7 +35,7 @@ paper-checkbox {
 <template is="dom-if" if="[[selectmultiple]]">
     <div class="items">
         <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
-            <paper-checkbox>[[item.title]]</paper-checkbox>
+            <paper-checkbox data-index$="[[index]]">[[item.title]]</paper-checkbox>
         </template>
     </div>
 </template>
@@ -43,7 +43,7 @@ paper-checkbox {
 <template is="dom-if" if="[[!selectmultiple]]">
     <paper-radio-group class="items">
         <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
-            <paper-radio-button name="{{index}}">[[item.title]]</paper-radio-button>
+            <paper-radio-button data-index$="[[index]]" name="{{index}}">[[item.title]]</paper-radio-button>
         </template>
     </paper-radio-group>
 </template>
@@ -98,27 +98,45 @@ Polymer({
     grade: function() {
         var maxPoints = 0;
         var points = 0;
-        var selectedDomElements = this.$.box.selectedItems || [];
-        var selected = selectedDomElements.map(function (e) { 
-            return parseInt(e.getAttribute("data-index")); 
-        });
+        var incorrect = 0;
+        var selected = [];
+
+        var items = this.selectmultiple ? 
+            Polymer.dom(this.root).querySelectorAll("paper-checkbox") : 
+            Polymer.dom(this.root).querySelectorAll("paper-radio-button");
+
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (item.checked) {
+                selected.push(parseInt(item.dataset.index));
+            }
+        }
 
         for (var i = 0; i < this.choices.length; i++) {
-            if (this.choices[i].correct) {
-                maxPoints++;
-                if (selected.indexOf(i) !== -1) {
+            if (selected.indexOf(i) !== -1) {
+                if (this.choices[i].correct) {
+                    maxPoints++;
                     points++;
+                } else {
+                    incorrect++;
                 }
             }
         }
 
-        return {
-            points: points,
-            maxPoints: maxPoints
+        var res = { 
+            answer: {
+                selected: selected,
+                correct: points,
+                incorrect: incorrect,
+                maxPoints: maxPoints
+            },
+            correct: points === maxPoints && incorrect === 0
         };
+        console.log(res);
+        return res;
     },
-    _computeType: function(selectmultiple) {
-        return selectmultiple ? "checkbox" : "radio";
+    validate: function() {
+        return true;
     }
 });
 </script>

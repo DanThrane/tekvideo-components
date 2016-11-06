@@ -39,7 +39,13 @@ Polymer({
         var givenAnswer = KAS.parse(this.$.mathInput.value);
         var result = KAS.compare(expectedValue.expr, givenAnswer.expr);
         console.log(result);
-        return result.equal;
+        return {
+            correct: result.equal,
+            answer: this.$.mathInput.value
+        };
+    },
+    validate: function() {
+        return this.$.mathInput.value.length > 0;
     }
 });
 </script>

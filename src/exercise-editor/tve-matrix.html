@@ -21,7 +21,14 @@ input {
 }
 </style>
 
-<tve-matrix-renderer height="[[height]]" width="[[width]]"></tve-matrix-renderer>
+<tve-matrix-renderer 
+    id="matrix" 
+    height="[[height]]" 
+    width="[[width]]">
+</tve-matrix-renderer>
+
+<button on-click="grade">Grade</button>
+
 
 </template>
 
@@ -42,6 +49,39 @@ Polymer({
             value: []
         }
     },
+    grade: function() {
+        var givenAnswer = this.$.matrix.value;
+        var correct = true;
+
+        try {
+            if (this.answer.length > 0 && 
+                    this.answer.length === givenAnswer.length && 
+                    this.answer[0].length === givenAnswer[0].length) {
+                outer: for (var i = 0; i < this.answer.length; i++) {
+                    for (var j = 0; j < this.answer[0].length; j++) {
+                        if (this.answer[i][j] !== givenAnswer[i][j]) {
+                            correct = false;
+                            console.log("Failed at " + i + ", " + j, 
+                                this.answer[i][j], givenAnswer[i][j]);
+                            break outer;
+                        }
+                    }
+                }
+            }
+        } catch (e) { 
+            console.log(e); 
+            correct = false;
+        }
+
+        var res = {
+            answer: givenAnswer,
+            correct: correct
+        };
+        console.log(res);
+    },
+    validate: function() {
+        return true;
+    }
 });
 </script>
 </dom-module>
