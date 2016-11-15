@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/marked-element/marked-element.html">
 <link rel="import" href="tve-matrix-renderer.html">
+<link rel="import" href="tve-status-indicator.html">
 
 <dom-module id="tve-matrix">
 
@@ -21,14 +22,13 @@ input {
 }
 </style>
 
+<tve-status-indicator status="[[status]]"></tve-status-indicator>
+
 <tve-matrix-renderer 
     id="matrix" 
     height="[[height]]" 
     width="[[width]]">
 </tve-matrix-renderer>
-
-<button on-click="grade">Grade</button>
-
 
 </template>
 
@@ -47,6 +47,10 @@ Polymer({
         answer: {
             type: Array,
             value: []
+        },
+        status: {
+            type: String,
+            value: ""
         }
     },
     grade: function() {
@@ -67,17 +71,18 @@ Polymer({
                         }
                     }
                 }
+            } else {
+                correct = false;
             }
         } catch (e) { 
             console.log(e); 
             correct = false;
         }
 
-        var res = {
+        return {
             answer: givenAnswer,
             correct: correct
         };
-        console.log(res);
     },
     validate: function() {
         return true;

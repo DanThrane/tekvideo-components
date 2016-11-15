@@ -8,6 +8,7 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="tve-renderer.html">
+<link rel="import" href="tve-status-indicator.html">
 
 <dom-module id="tv-exercise-multiple-choice">
 
@@ -32,6 +33,8 @@ paper-checkbox {
 }
 </style>
 
+<tve-status-indicator status="[[status]]"></tve-status-indicator>
+
 <template is="dom-if" if="[[selectmultiple]]">
     <div class="items">
         <template is="dom-repeat" items="{{_computeChoices(choices.*, randomizeorder)}}">
@@ -48,8 +51,6 @@ paper-checkbox {
     </paper-radio-group>
 </template>
 
-<button on-click="grade">Grade</button>
-    
 </template>
 
 <script>
@@ -67,6 +68,10 @@ Polymer({
         choices: {
             type: Array,
             value: []
+        },
+        status: {
+            type: String,
+            value: ""
         }
     },
     _computeChoices: function(choices, randomizeOrder) {
@@ -112,10 +117,14 @@ Polymer({
             }
         }
 
+
         for (var i = 0; i < this.choices.length; i++) {
+            if (this.choices[i].correct) {
+                maxPoints++;
+            }
+
             if (selected.indexOf(i) !== -1) {
                 if (this.choices[i].correct) {
-                    maxPoints++;
                     points++;
                 } else {
                     incorrect++;
@@ -123,7 +132,7 @@ Polymer({
             }
         }
 
-        var res = { 
+        return { 
             answer: {
                 selected: selected,
                 correct: points,
@@ -132,8 +141,6 @@ Polymer({
             },
             correct: points === maxPoints && incorrect === 0
         };
-        console.log(res);
-        return res;
     },
     validate: function() {
         return true;

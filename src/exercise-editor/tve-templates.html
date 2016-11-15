@@ -48,75 +48,83 @@
           }
         });
         registerTemplate("Opgaver", "Indeholder diverse opgave widgets", {
-          "name": "",
-          "document": "Her er der en matrix: [[ref ny-matrix]]\n\nHer er en multiple choice test:\n\n[[ref ny-multiple-choice]]\n\n[[ref ny-multiple-choice0]]",
-          "widgets": {
-            "ny-matrix": {
-              "type": "matrix",
-              "properties": {
-                "answer": [
-                  [
-                    "1",
-                    "2",
-                    "3"
-                  ],
-                  [
-                    "4",
-                    "5",
-                    "6"
-                  ],
-                  [
-                    "7",
-                    "8",
-                    "9"
-                  ]
-                ]
-              },
-              "name": "ny-matrix"
-            },
-            "ny-multiple-choice": {
-              "type": "multiple-choice",
-              "properties": {
-                "randomizeorder": false,
-                "choices": [
-                  {
-                    "title": "1",
-                    "correct": false
-                  },
-                  {
-                    "title": "2",
-                    "correct": true
-                  },
-                  {
-                    "title": "3",
-                    "correct": false
-                  }
-                ]
-              },
-              "name": "ny-multiple-choice"
-            },
-            "ny-multiple-choice0": {
-              "type": "multiple-choice",
-              "properties": {
-                "choices": [
-                  {
-                    "title": "1",
-                    "correct": false
-                  },
-                  {
-                    "title": "2",
-                    "correct": true
-                  },
-                  {
-                    "title": "3",
-                    "correct": false
-                  }
-                ],
-                "selectmultiple": true
-              },
-              "name": "ny-multiple-choice0"
-            }
-          }});
+  "name": "",
+  "document": "Her er der en matrix: [[ref ny-matrix]]\n\nHer er en multiple choice test:\n\n[[ref ny-multiple-choice]]\n\n[[ref ny-multiple-choice0]]\n\n[[eql 2x = ]] [[ref ny-input]]",
+  "widgets": {
+    "ny-matrix": {
+      "type": "matrix",
+      "properties": {
+        "answer": [
+          [
+            "1",
+            "2",
+            "3"
+          ],
+          [
+            "4",
+            "5",
+            "6"
+          ],
+          [
+            "7",
+            "8",
+            "9"
+          ]
+        ]
+      },
+      "name": "ny-matrix"
+    },
+    "ny-multiple-choice": {
+      "type": "multiple-choice",
+      "properties": {
+        "randomizeorder": false,
+        "choices": [
+          {
+            "title": "1",
+            "correct": false
+          },
+          {
+            "title": "2",
+            "correct": true
+          },
+          {
+            "title": "3",
+            "correct": false
+          }
+        ]
+      },
+      "name": "ny-multiple-choice"
+    },
+    "ny-multiple-choice0": {
+      "type": "multiple-choice",
+      "properties": {
+        "choices": [
+          {
+            "title": "1",
+            "correct": false
+          },
+          {
+            "title": "2",
+            "correct": true
+          },
+          {
+            "title": "3",
+            "correct": false
+          }
+        ],
+        "selectmultiple": true
+      },
+      "name": "ny-multiple-choice0"
+    },
+    "ny-input": {
+      "type": "equation-input",
+      "properties": {
+        "content": "2x"
+      },
+      "name": "ny-input"
+    }
+  }
+});
 
       })();
 </script>

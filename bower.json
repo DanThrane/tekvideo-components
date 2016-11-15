@@ -41,7 +41,9 @@
     "codemirror": "~4.4.0",
     "interact": "^1.2.6",
     "marked": "^0.3.6",
-    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.6"
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.6",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1",
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
