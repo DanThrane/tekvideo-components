@@ -100,10 +100,7 @@ Polymer({
         }
         return array;
     },
-    grade: function() {
-        var maxPoints = 0;
-        var points = 0;
-        var incorrect = 0;
+    getSelected: function() {
         var selected = [];
 
         var items = this.selectmultiple ? 
@@ -116,7 +113,13 @@ Polymer({
                 selected.push(parseInt(item.dataset.index));
             }
         }
-
+        return selected;
+    },
+    grade: function() {
+        var maxPoints = 0;
+        var points = 0;
+        var incorrect = 0;
+        var selected = this.getSelected();
 
         for (var i = 0; i < this.choices.length; i++) {
             if (this.choices[i].correct) {
@@ -143,7 +146,7 @@ Polymer({
         };
     },
     validate: function() {
-        return true;
+        return this.getSelected().length > 0
     }
 });
 </script>
