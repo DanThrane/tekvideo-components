@@ -45,7 +45,6 @@ Polymer({
         var expectedValue = KAS.parse(this.content);
         var givenAnswer = KAS.parse(this.$.mathInput.value);
         var result = KAS.compare(expectedValue.expr, givenAnswer.expr);
-        console.log(result);
         return {
             correct: result.equal,
             answer: this.$.mathInput.value

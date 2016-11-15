@@ -63,13 +63,10 @@ paper-tabs {
 }
 </style>
 
-<iron-a11y-keys id="a11y" keys="alt+e alt+f alt+j alt+r alt+insert crtl+s" on-keys-pressed="onShortcut">
-</iron-a11y-keys>
-
 <paper-tabs selected="{{selectedPage}}" scrollable fit-container>
-  <paper-tab>Editor [E]</paper-tab>
-  <paper-tab>Forhåndsvisning [F]</paper-tab>
-  <paper-tab>JSON [J]</paper-tab>
+  <paper-tab>Editor</paper-tab>
+  <paper-tab>Forhåndsvisning</paper-tab>
+  <paper-tab>JSON</paper-tab>
 </paper-tabs>
 
 <iron-pages selected="{{selectedPage}}">
@@ -83,7 +80,7 @@ paper-tabs {
             </paper-dropdown-menu>
             <paper-button id="addWidget" on-click="_addWidget">
                 <iron-icon icon="add"></iron-icon>
-                Tilføj [INS]
+                Tilføj
             </paper-button>
         </div>
         <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
@@ -158,7 +155,6 @@ Polymer({
     observers: ["_observeSelectedPage(selectedPage)"],
     ready: function() {
         var self = this;
-        this.$.a11y.target = document.querySelector("body");
         this.$.templateSelector.addEventListener("insert", function(e) {
             var data = e.detail.object;
             self.$.inputJsonField.value = JSON.stringify(data, null, 2);
@@ -181,35 +177,6 @@ Polymer({
             this.$.widgetDropdown.appendChild(item);
         }
         this.$.widgetDropdown.selected = 0;
-    },
-    onShortcut: function(e) {
-        var preventDefault = true;
-        switch (e.detail.combo) {
-            case "alt+e":
-                this.selectedPage = PAGE_EDITOR;
-                break;
-            case "alt+f":
-                this.selectedPage = PAGE_PREVIEW;
-                break;
-            case "alt+j":
-                this.selectedPage = PAGE_JSON;
-                break;
-            case "alt+r":
-                this.$.widgetDropdown.expand();
-                break;
-            case "alt+insert":
-                this._addWidget();
-                break;
-            case "crtl+s":
-                break;
-            default:
-                preventDefault = false;
-                break;
-        }
-        if (preventDefault) {
-            e.detail.keyboardEvent.preventDefault();
-            return false;
-        }
     },
     addWidget: function(widget, name) {
         var self = this;

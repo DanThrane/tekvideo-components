@@ -65,8 +65,6 @@ Polymer({
                     for (var j = 0; j < this.answer[0].length; j++) {
                         if (this.answer[i][j] !== givenAnswer[i][j]) {
                             correct = false;
-                            console.log("Failed at " + i + ", " + j, 
-                                this.answer[i][j], givenAnswer[i][j]);
                             break outer;
                         }
                     }
