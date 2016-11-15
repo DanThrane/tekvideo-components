@@ -155,8 +155,6 @@ Polymer({
                     break;
             }
         }
-        console.log(result);
-        console.table(output);
         documentInsertion.innerHTML = result;
         for (var i = 0; i < output.length; i++) {
             var insertionPoint = documentInsertion.querySelector("#insertion-" + i);
@@ -217,8 +215,6 @@ Polymer({
             return isGraded;
         });
 
-        console.log(gradedWidgets);
-
         var validates = true;
         var passes = true;
         for (var i = 0; i < gradedWidgets.length; i++) {
@@ -245,12 +241,10 @@ Polymer({
             widget.status = status;
             if (!result.correct){
                 passes = false;
-                console.log(widget, result);
             } 
             widgetResults.push(result);
         }
 
-        console.log("Passing?", passes);
         if (passes) this.setStatus(1);
         else this.setStatus(3);
 

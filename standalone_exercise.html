@@ -60,40 +60,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <tve-renderer id="renderer" is-interactive></tve-renderer>
 
 <script>
-  var exercise = {
-    "name": "",
-    "document": "# Ligningssystemer\n\nGivet ligningerne [[eql 2x + y = 3]] og [[eql x - y = 0]] bestem [[eql x]] og [[eql y]].\n\n[[eql x =]] [[ref input-1]]\n\n[[eql y =]] [[ref input-2]]\n\n[[ref hint-1]]\n\n[[ref hint-2]]",
-    "widgets": {
-      "input-1": {
-        "type": "equation-input",
-        "properties": {
-          "content": "1"
-        },
-        "name": "input-1"
-      },
-      "input-2": {
-        "type": "equation-input",
-        "properties": {
-          "content": "1"
-        },
-        "name": "input-2"
-      },
-      "hint-1": {
-        "type": "hint",
-        "properties": {
-          "content": "Læg de to ligninger sammen, det giver [[eql 3x = 3]]. Derefter kan [[eql x]] findes og vi har [[eql x = 1]]"
-        },
-        "name": "hint-1"
-      },
-      "hint-2": {
-        "type": "hint",
-        "properties": {
-          "content": "Indsæt [[eql x = 1]] i den første ligninge. Det giver [[eql 2 \\cdot 1 + y = 3]], der forenkles til [[eql y = 1]]."
-        },
-        "name": "hint-2"
-      }
-    }
-  };
+  var exercise =  {"document":"# Typer af differentialligninger\n\nDifferentialligningen [[eql \\frac{dy}{dx} = \\frac{y}{x^2}]] er:\n\n[[ref multiple-choice]]\n\n[[ref hint-1]]\n\n[[ref hint-2]]\n\n[[ref hint-3]]","widgets":{"multiple-choice":{"type":"multiple-choice","properties":{"choices":[{"title":"separabel","correct":false},{"title":"første ordens linær","correct":false},{"title":"både separabel og første ordens linær ","correct":true},{"title":"hverken separabel eller første ordens linær ","correct":false}]},"name":"multiple-choice"},"hint-1":{"type":"hint","properties":{"content":"Ligningen kan skrives på formen:\n\n[[eq \\frac{dy}{dx} = \\frac{1}{x^2} \\cdot y]]"},"name":"hint-1"},"hint-2":{"type":"hint","properties":{"content":"Ligningen kan skrives på formen:\n\n[[eq \\frac{dy}{dx} + \\frac{-1}{x^2} \\cdot y = 0]]"},"name":"hint-2"},"hint-3":{"type":"hint","properties":{"content":"Hint 1 viser at ligningen er separabel\n\nHint 2 viser at ligningen er en første ordens linær "},"name":"hint-3"}}};
 
   var renderer = document.getElementById('renderer');
   renderer.content = exercise.document;

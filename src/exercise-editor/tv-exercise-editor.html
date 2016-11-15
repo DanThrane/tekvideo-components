@@ -86,6 +86,7 @@ paper-tabs {
         <p><b>Syntaks:</b> <code>[[ref WIDGET-NAVN]]</code> reference til widgets. Widgets med en forkortelse kan indsættes direkte. For eksempel: <code>[[eql 2^2 = 4]]</code></p>
         
         <tve-template-selector id="templateSelector"></tve-template-selector>
+        <paper-button on-click="_save">Gem</paper-button>
         
         <paper-textarea value="{{documentContent}}" label="Dokument" rows="20"></paper-textarea>
         
@@ -263,6 +264,9 @@ Polymer({
                 this.widgets = JSON.parse(JSON.stringify(this.widgets));
                 break;
         }
+    },
+    _save: function() {
+        this.fire("save");
     }
 });
 })();
