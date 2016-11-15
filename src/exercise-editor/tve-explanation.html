@@ -37,6 +37,8 @@ Polymer({
     showExplanation: function() {
         this.$.collapse.show();
         this.$.button.hidden = true;
+
+        this.fire("action", { type: "hint-showed" })
     }
 });
 </script>

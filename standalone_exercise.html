@@ -81,7 +81,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       "hint-1": {
         "type": "hint",
         "properties": {
-          "content": "Læg de to ligninger sammen, det giver [[eql 3x = 3]]. Derefter kan [[eql x findes]] og vi har [[eql x = 1]]"
+          "content": "Læg de to ligninger sammen, det giver [[eql 3x = 3]]. Derefter kan [[eql x]] findes og vi har [[eql x = 1]]"
         },
         "name": "hint-1"
       },
@@ -98,6 +98,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   var renderer = document.getElementById('renderer');
   renderer.content = exercise.document;
   renderer.widgets = exercise.widgets;
+
+  renderer.addEventListener("widget-action", function(e) {
+    console.log("Widget action: ", e);
+  });
+
+  renderer.addEventListener("grade", function(e) {
+    console.log("Grading: ", e);
+  });
 </script>
 
 </body>

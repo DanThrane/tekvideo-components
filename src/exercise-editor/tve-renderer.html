@@ -60,10 +60,7 @@ paper-button {
     on-click="checkAnswers"
     raised>
 
-    <iron-pages id="pages" 
-            selected="[[_buttonStatus]]"
-            entry-animation="slide-up-animation" 
-            exit-animation="slide-from-top-animation">
+    <iron-pages id="pages" selected="[[_buttonStatus]]">
         <div>Tjek svar</div>
         <div>Korrekt!</div>
         <div>Du mangler at afgive svar i et af felterne</div>
@@ -186,6 +183,7 @@ Polymer({
         }
     },
     _createWidget: function(type, properties) {
+        var self = this;
         var component = document.createElement(type);
 
         for (var property in properties) {
@@ -193,6 +191,13 @@ Polymer({
             component[property] = value;
         }
         component.dataset.isWidget = true;
+
+        component.addEventListener("action", function(e) {
+            self.fire("widget-action", {
+                widget: component,
+                detail: e.detail
+            });
+        });
         return component;
     },
     checkAnswers: function() {
@@ -231,6 +236,7 @@ Polymer({
             return;
         }
 
+        var widgetResults = [];
         for (var i = 0; i < gradedWidgets.length; i++) {
             var widget = gradedWidgets[i];
 
@@ -241,11 +247,17 @@ Polymer({
                 passes = false;
                 console.log(widget, result);
             } 
+            widgetResults.push(result);
         }
 
         console.log("Passing?", passes);
         if (passes) this.setStatus(1);
         else this.setStatus(3);
+
+        this.fire("grade", {
+            passes: passes,
+            widgetResults: widgetResults
+        });
     },
     beginSpinning: function(status) {
         var self = this;
