@@ -250,6 +250,7 @@ Polymer({
         for (a in value.widgets) {
             this.addWidget(value.widgets[a], value.widgets[a].name);
         }
+        this.name = value.name;
         // TODO Hack
         this._observeSelectedPage(PAGE_JSON);
     },
