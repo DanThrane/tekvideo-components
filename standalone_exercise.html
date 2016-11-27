@@ -61,10 +61,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <script>
   var exercise = {
-  "name": "",
-  "document": "Testing testing 123 [[eql 2 + 3]] [[eq x^2 = x \\cdot x]]",
-  "widgets": {}
-};
+    "name": "Test",
+    "document": "Dette er en test: [[ref ny-equation-input]]\n\nOg en mere [[ref eq2]]",
+    "widgets": {
+      "ny-equation-input": {
+        "type": "equation-input",
+        "properties": {},
+        "name": "ny-equation-input"
+      },
+      "eq2": {
+        "type": "equation-input",
+        "properties": {},
+        "name": "eq2"
+      },
+    }
+  };
 
   var renderer = document.getElementById('renderer');
   renderer.content = exercise.document;
