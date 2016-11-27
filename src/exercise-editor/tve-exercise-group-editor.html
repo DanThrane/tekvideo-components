@@ -1,0 +1,137 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="tv-exercise-editor.html">
+
+<dom-module id="tve-exercise-group-editor">
+
+<template>
+<style include="iron-flex"></style>
+
+<style>
+:host {
+    display: block;
+}
+
+paper-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+}
+</style>
+
+<app-location route="{{_route}}" use-hash-as-path></app-location>
+
+<app-route
+    route="{{_route}}"
+    pattern="/:page"
+    data="{{_pageData}}"
+    tail="{{_pageTail}}">
+</app-route>
+
+<app-route
+    route="{{_pageTail}}"
+    pattern="/:id"
+    data="{{_pageId}}">
+</app-route>
+
+<iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
+    <div id="home">
+        <paper-input 
+            label="Navn" 
+            value="{{value}}">
+        </paper-input>
+        <paper-textarea 
+            rows="10"
+            label="Beskrivelse" 
+            value="{{description}}">
+        </paper-textarea>
+
+        <div class="layout horizontal">
+            <paper-input label="Opgave navn" value="{{_exerciseName}}" class="flex"></paper-input>
+            <paper-button on-click="_addExercise">Tilføj opgave</paper-button>
+        </div>
+
+        <template is="dom-repeat" items="{{exercises}}">
+            [[item.name]]
+        </template>
+    </div>
+    <div id="edit">
+        <tv-exercise-editor 
+            id="editor"
+            name="{{currentExercise.name}}"
+            document-content="{{currentExercise.document}}"
+            widgets="{{currentExercise.widgets}}">
+        </tv-exercise-editor>
+    </div>
+</iron-pages>
+
+<paper-toast id="toast">
+</paper-toast>
+
+<paper-fab icon="add" on-click="_addExercise"></paper-fab>
+
+</template>
+
+<script>
+Polymer({
+    is: 'tve-exercise-group-editor',
+    properties: {
+        name: {
+            type: String,
+            value: ""
+        },
+        description: {
+            type: String,
+            value: ""
+        },
+        exercises: {
+            type: Array,
+            value: []
+        }
+    },
+    observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
+    _observePage: function(pageData) {
+        this.exercises = JSON.parse(JSON.stringify(this.exercises));
+        console.log(this.currentExercise);
+    },
+    _observePageData: function(pageId) {
+        var id = pageId.id;
+        var editor = this.$.editor;
+
+        var exercise = this.exercises[id];
+        console.log(pageId);
+        console.log(this.exercises);
+        if (!exercise) {
+            this._displayToast("Kunne ikke finde opgave");
+            this._route.path = "home";
+            document.location = "#/home"
+        } else {
+            this.currentExercise = exercise;
+            console.log("Exercise:", this.currentExercise);
+        }
+    },
+    _addExercise: function() {
+        this.push("exercises", {
+            name: "Ny opgave",
+            document: "",
+            widgets: {}
+        });
+        document.location = "#/edit/" + (this.exercises.length - 1);
+    },
+    _displayToast: function(text) {
+        var toast = this.$.toast;
+        toast.text = text;
+        toast.opened = true;
+    }
+});
+</script>
+</dom-module>
