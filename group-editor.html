@@ -42,7 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
     body {
       margin: 0 auto;
-      width: 960px;
+      max-width: 960px;
       font-family: 'Roboto', 'Noto', sans-serif;
       line-height: 1.5;
       min-height: 100vh;
@@ -50,7 +50,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
     
     tve-exercise-group-editor {
-      width: 960px;
+      max-width: 960px;
     }
   </style>
 
@@ -60,7 +60,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <tve-exercise-group-editor id="renderer"></tve-exercise-group-editor>
 
 <script>
-
+var renderer = document.querySelector("#renderer");
+renderer.addEventListener("save", function() {
+  console.log(renderer.name);
+  console.log(renderer.description);
+  console.log(renderer.exercises);
+  renderer.displaySaveFailure();
+});
 </script>
 
 </body>

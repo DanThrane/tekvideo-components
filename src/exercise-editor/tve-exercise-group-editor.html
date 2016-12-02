@@ -68,12 +68,13 @@ paper-fab {
         <paper-icon-button icon="chevron-left" on-click="_goBack"></paper-icon-button>
     </template>
     <span class="title">Title</span>
+    <paper-icon-button icon="save" on-click="save"></paper-icon-button>
 </paper-toolbar>
 <iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
     <div id="home" class="content">
         <paper-input 
             label="Navn" 
-            value="{{value}}">
+            value="{{name}}">
         </paper-input>
         <paper-textarea 
             rows="10"
@@ -86,7 +87,7 @@ paper-fab {
                 <paper-item on-focus="selectItem" class="fake-link">
                     <paper-item-body two-line>
                         <div>[[item.name]]</div>
-                        <div secondary>Jan 9, 2014</div>
+                        <div secondary>[[_computeShortDocument(item)]]</div>
                     </paper-item-body>
                     <paper-icon-button icon="content-copy" alt="Lav kopi" on-click="_makeCopy"></paper-icon-button>
                     <paper-icon-button icon="delete" alt="Slet" on-click="_deleteExercise"></paper-icon-button>
@@ -99,7 +100,8 @@ paper-fab {
             id="editor"
             name="{{currentExercise.name}}"
             document-content="{{currentExercise.document}}"
-            widgets="{{currentExercise.widgets}}">
+            widgets="{{currentExercise.widgets}}"
+            hide-save>
         </tv-exercise-editor>
     </div>
 </iron-pages>
@@ -151,6 +153,11 @@ Polymer({
     selectItem: function(e) {
         document.location = this._computeEditLink(e.model.index);
     },
+    _computeShortDocument: function(item) {
+        var text = item.document;
+        var length = text.length;
+        return text.substring(0, Math.min(length, 120));
+    },
     _goBack: function() {
         document.location = "#/home";
     },
@@ -167,19 +174,17 @@ Polymer({
         var editor = this.$.editor;
 
         var exercise = this.exercises[id];
-        console.log(pageId);
-        console.log(this.exercises);
         if (!exercise) {
             this._displayToast("Kunne ikke finde opgave");
             this._route.path = "home";
             document.location = "#/home"
         } else {
             this.currentExercise = exercise;
-            console.log("Exercise:", this.currentExercise);
+            editor.selectedPage = 0;
+            editor.update();
         }
     },
     _showBackButton: function(_pageData) {
-        console.log(_pageData.page !== "home");
         return _pageData.page !== "home";
     },
     _computeEditLink: function(item) {
@@ -205,6 +210,15 @@ Polymer({
         var toast = this.$.toast;
         toast.text = text;
         toast.opened = true;
+    },
+    save: function() {
+        this.fire("save");
+    },
+    displaySaveSuccess: function() {
+        this._displayToast("Opgaven er blevet gemt!");
+    },
+    displaySaveFailure: function() {
+        this._displayToast("Der skete en fejl da opgaven skulle gemes!");
     }
 });
 </script>
