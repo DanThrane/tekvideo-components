@@ -9,6 +9,13 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="tv-exercise-editor.html">
 
 <dom-module id="tve-exercise-group-editor">
@@ -25,6 +32,19 @@ paper-fab {
     position: fixed;
     bottom: 24px;
     right: 24px;
+}
+
+.paper-item-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.fake-link {
+    cursor: pointer;
+}
+
+.content {
+    margin: 16px;
 }
 </style>
 
@@ -43,8 +63,14 @@ paper-fab {
     data="{{_pageId}}">
 </app-route>
 
+<paper-toolbar>
+    <template is="dom-if" if="{{_showBackButton(_pageData)}}">
+        <paper-icon-button icon="chevron-left" on-click="_goBack"></paper-icon-button>
+    </template>
+    <span class="title">Title</span>
+</paper-toolbar>
 <iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
-    <div id="home">
+    <div id="home" class="content">
         <paper-input 
             label="Navn" 
             value="{{value}}">
@@ -55,14 +81,18 @@ paper-fab {
             value="{{description}}">
         </paper-textarea>
 
-        <div class="layout horizontal">
-            <paper-input label="Opgave navn" value="{{_exerciseName}}" class="flex"></paper-input>
-            <paper-button on-click="_addExercise">Tilføj opgave</paper-button>
+        <div role="listbox">
+            <template is="dom-repeat" items="{{exercises}}">
+                <paper-item on-focus="selectItem" class="fake-link">
+                    <paper-item-body two-line>
+                        <div>[[item.name]]</div>
+                        <div secondary>Jan 9, 2014</div>
+                    </paper-item-body>
+                    <paper-icon-button icon="content-copy" alt="Lav kopi" on-click="_makeCopy"></paper-icon-button>
+                    <paper-icon-button icon="delete" alt="Slet" on-click="_deleteExercise"></paper-icon-button>
+                </paper-item>
+            </template>
         </div>
-
-        <template is="dom-repeat" items="{{exercises}}">
-            [[item.name]]
-        </template>
     </div>
     <div id="edit">
         <tv-exercise-editor 
@@ -76,6 +106,16 @@ paper-fab {
 
 <paper-toast id="toast">
 </paper-toast>
+
+<paper-dialog id="deleteModal">
+  <h2>Slet opgave</h2>
+  <p>Er du sikker på du vil slette opgaven "{{exerciseName}}"?</p>
+  <div class="buttons">
+    <paper-button dialog-dismiss>Annuller</paper-button>
+    <paper-button dialog-confirm autofocus on-click="_confirmDelete">Ja, slet opgaven</paper-button>
+  </div>
+</paper-dialog>
+
 
 <paper-fab icon="add" on-click="_addExercise"></paper-fab>
 
@@ -95,15 +135,34 @@ Polymer({
         },
         exercises: {
             type: Array,
-            value: []
+            value: [
+                { name: "Ny opgave 1", document: "", widgets: {} },
+                { name: "Ny opgave 2", document: "", widgets: {} },
+                { name: "Ny opgave 3", document: "", widgets: {} },
+                { name: "Ny opgave 4", document: "", widgets: {} },
+                { name: "Ny opgave 5", document: "", widgets: {} },
+            ]
         }
     },
     observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
     _observePage: function(pageData) {
         this.exercises = JSON.parse(JSON.stringify(this.exercises));
-        console.log(this.currentExercise);
+    },
+    selectItem: function(e) {
+        document.location = this._computeEditLink(e.model.index);
+    },
+    _goBack: function() {
+        document.location = "#/home";
+    },
+    _makeCopy: function(e) {
+        var exercise = e.model.item;
+        var copy = JSON.parse(JSON.stringify(exercise));
+        copy.name += " (kopi)";
+        this.push("exercises", copy);
     },
     _observePageData: function(pageId) {
+        if (this._pageData.page !== "edit") return;
+
         var id = pageId.id;
         var editor = this.$.editor;
 
@@ -119,6 +178,13 @@ Polymer({
             console.log("Exercise:", this.currentExercise);
         }
     },
+    _showBackButton: function(_pageData) {
+        console.log(_pageData.page !== "home");
+        return _pageData.page !== "home";
+    },
+    _computeEditLink: function(item) {
+        return "#/edit/" + item;
+    },
     _addExercise: function() {
         this.push("exercises", {
             name: "Ny opgave",
@@ -126,6 +192,14 @@ Polymer({
             widgets: {}
         });
         document.location = "#/edit/" + (this.exercises.length - 1);
+    },
+    _deleteExercise: function(e) {
+        this.currentExerciseIndex = e.model.index;
+        this.exerciseName = this.exercises[this.currentExerciseIndex].name;
+        this.$.deleteModal.open();
+    },
+    _confirmDelete: function() {
+        this.splice("exercises", this.currentExerciseIndex, 1);
     },
     _displayToast: function(text) {
         var toast = this.$.toast;
