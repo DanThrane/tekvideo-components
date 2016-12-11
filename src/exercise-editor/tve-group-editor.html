@@ -18,7 +18,7 @@
 <link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="tv-exercise-editor.html">
 
-<dom-module id="tve-exercise-group-editor">
+<dom-module id="tve-group-editor">
 
 <template>
 <style include="iron-flex"></style>
@@ -67,7 +67,7 @@ paper-fab {
     <template is="dom-if" if="{{_showBackButton(_pageData)}}">
         <paper-icon-button icon="chevron-left" on-click="_goBack"></paper-icon-button>
     </template>
-    <span class="title">Title</span>
+    <span class="title">{{title}}</span>
     <paper-icon-button icon="save" on-click="save"></paper-icon-button>
 </paper-toolbar>
 <iron-pages selected="[[_pageData.page]]" attr-for-selected="id">
@@ -98,6 +98,7 @@ paper-fab {
     <div id="edit">
         <tv-exercise-editor 
             id="editor"
+            identifier="{{currentExercise.identifier}}"
             name="{{currentExercise.name}}"
             document-content="{{currentExercise.document}}"
             widgets="{{currentExercise.widgets}}"
@@ -125,7 +126,7 @@ paper-fab {
 
 <script>
 Polymer({
-    is: 'tve-exercise-group-editor',
+    is: 'tve-group-editor',
     properties: {
         name: {
             type: String,
@@ -138,16 +139,18 @@ Polymer({
         exercises: {
             type: Array,
             value: [
-                { name: "Ny opgave 1", document: "", widgets: {} },
-                { name: "Ny opgave 2", document: "", widgets: {} },
-                { name: "Ny opgave 3", document: "", widgets: {} },
-                { name: "Ny opgave 4", document: "", widgets: {} },
-                { name: "Ny opgave 5", document: "", widgets: {} },
             ]
+        },
+        title: {
+            type: String,
+            value: "Ny opgave"
         }
     },
     observers: ["_observePage(_pageData)", "_observePageData(_pageId)"],
     _observePage: function(pageData) {
+        if (pageData.page !== "home" && pageData.page !== "edit") {
+            document.location = "#/home";
+        }
         this.exercises = JSON.parse(JSON.stringify(this.exercises));
     },
     selectItem: function(e) {
@@ -164,6 +167,7 @@ Polymer({
     _makeCopy: function(e) {
         var exercise = e.model.item;
         var copy = JSON.parse(JSON.stringify(exercise));
+        copy.identifier = null;
         copy.name += " (kopi)";
         this.push("exercises", copy);
     },
@@ -192,6 +196,7 @@ Polymer({
     },
     _addExercise: function() {
         this.push("exercises", {
+            identifier: null,
             name: "Ny opgave",
             document: "",
             widgets: {}
@@ -219,6 +224,9 @@ Polymer({
     },
     displaySaveFailure: function() {
         this._displayToast("Der skete en fejl da opgaven skulle gemes!");
+    },
+    displayValidationFailure: function() {
+        this._displayToast("Der skete en fejl under validering af input. Mangler du navn?");
     }
 });
 </script>

@@ -37,7 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   </script>
 
-  <link rel="import" href="/src/exercise-editor/tve-group-editor.html">
+  <link rel="import" href="/src/exercise-editor/tve-group-renderer.html">
 
   <style>
     body {
@@ -57,16 +57,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
-  <tve-group-editor id="renderer"></tve-group-editor>
+  <tve-group-renderer id="renderer"></tve-group-renderer>
 
 <script>
 var renderer = document.querySelector("#renderer");
 
-renderer.addEventListener("save", function() {
-  console.log(renderer.name);
-  console.log(renderer.description);
-  console.log(renderer.exercises);
-  renderer.displaySaveFailure();
+var pool = [];
+var completed = [];
+
+for (var i = 0; i < 100; i++) {
+  pool.push({
+    identifier: i + 100,
+    name: "Test opgave [" + i + "]",
+    document: "Test opgave [" + i + "]",
+    widgets: {}
+  });
+}
+
+for (var i = 100; i <= 190; i++) {
+  completed.push(i);
+}
+
+renderer.exercisePool = pool;
+renderer.completed = completed;
+renderer.display(0);
+
+renderer.addEventListener("backToMenu", function() {
+  document.location = "/";
 });
 </script>
 
